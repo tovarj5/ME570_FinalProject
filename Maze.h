@@ -30,8 +30,8 @@ private:
 
 ///////////////// User selectable parameters ///////////////////////////////
 
-const int ImageSize = 512;
-const int NumCells  = 63;
+const int ImageSize = 500*2;
+const int NumCells  = 63/4;
 
 ////////////////////////////////////////////////////////////////////////////
 

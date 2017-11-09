@@ -599,6 +599,17 @@ void OSGWidget::create_triangle()
    mRoot->addChild(transform);
 }
 
+void OSGWidget::clear()
+{
+    mRoot->removeChildren(0, mRoot->getNumChildren());
+
+    create_box1();
+    create_box2();
+    create_box3();
+    create_ground();
+    //create_outerWalls();
+}
+
 //void OSGWidget::create_ellipsoid(Ellipsoid *e)
 //{
 //    double radx{0},rady{0},radz{0};

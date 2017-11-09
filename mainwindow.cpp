@@ -315,6 +315,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionStart_New_Game_triggered()
 {
+    on_actionClear_Maze_triggered();
+
     double x{0},y{0},z{0},w{0};
     ui->osgGraphicWidget->create_wall(x,y,z,w);
     Maze *m = new Maze;
@@ -323,4 +325,21 @@ void MainWindow::on_actionStart_New_Game_triggered()
     {
         ui->osgGraphicWidget->create_wall(a, b, c, d);
     });
+}
+
+void MainWindow::on_actionClear_Maze_triggered()
+{
+   ui->osgGraphicWidget->clear();
+   ui->osgGraphicWidget->update();
+//   ui->osgGraphicWidget->create_outerWalls();
+}
+
+void MainWindow::on_actionBouncy_Ball_Example_triggered()
+{
+
+}
+
+void MainWindow::on_actionMaze_Settings_triggered()
+{
+
 }

@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>849</width>
-     <height>20</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -50,13 +50,22 @@
     <addaction name="actionStart_New_Game"/>
     <addaction name="actionPause_Game"/>
     <addaction name="actionStop_Game"/>
+    <addaction name="actionClear_Maze"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionBouncy_Ball_Example"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionMaze_Settings"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -81,6 +90,21 @@
   <action name="actionStop_Game">
    <property name="text">
     <string>Stop Game</string>
+   </property>
+  </action>
+  <action name="actionClear_Maze">
+   <property name="text">
+    <string>Clear Maze</string>
+   </property>
+  </action>
+  <action name="actionBouncy_Ball_Example">
+   <property name="text">
+    <string>Bouncy Ball Example</string>
+   </property>
+  </action>
+  <action name="actionMaze_Settings">
+   <property name="text">
+    <string>Maze Settings</string>
    </property>
   </action>
  </widget>

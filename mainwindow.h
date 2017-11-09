@@ -28,6 +28,12 @@ public:
 private slots:
     void on_actionStart_New_Game_triggered();
 
+    void on_actionClear_Maze_triggered();
+
+    void on_actionBouncy_Ball_Example_triggered();
+
+    void on_actionMaze_Settings_triggered();
+
 private:
     Ui::MainWindow *ui;
     struct Box

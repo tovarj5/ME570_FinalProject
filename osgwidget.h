@@ -41,8 +41,10 @@ public:
   void create_triangle();
 //  void create_ellipsoid(Ellipsoid *e);
 //  void create_cone(Cone *c);// double h, double radx,double rady);
+  void clear();
   void remove_shape(int index);
   void create_wall(double xCenter,double yCenter,double xWidth,double yHeight);
+  void create_outerWalls();
 
 protected:
 
@@ -66,7 +68,7 @@ private:
   void create_box2();
   void create_box3();
   void create_ground();
-  void create_outerWalls();
+
 
   virtual void go_home();
   virtual void on_resize( int width, int height );
