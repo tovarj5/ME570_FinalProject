@@ -93,7 +93,27 @@ void Maze::GenerateMaze()
 		g_Maze[ CellIdx() ] = Mask[ Dir ];
 	}
 
-	std::cout << std::endl;
+    std::cout << std::endl;
+}
+
+int Maze::getMazeSize()
+{
+    return ImageSize;
+}
+
+void Maze::setMazeSize(int siz)
+{
+    ImageSize = siz;
+}
+
+int Maze::getNumCells()
+{
+    return NumCells;
+}
+
+void Maze::setNumCells(int num)
+{
+    NumCells = num;
 }
 
 /*#if defined( __GNUC__ )

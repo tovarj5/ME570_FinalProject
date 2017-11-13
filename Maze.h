@@ -30,8 +30,8 @@ private:
 
 ///////////////// User selectable parameters ///////////////////////////////
 
-const int ImageSize = 500*2;
-const int NumCells  = 63/4;
+ int ImageSize = 500*2;
+ int NumCells  = 100/6;
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -87,6 +87,10 @@ Maze();
 void MakeMaze();
 void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
 void GenerateMaze();
+int getMazeSize();
+void setMazeSize(int siz);
+int getNumCells();
+void setNumCells(int num);
 };
 
 #endif

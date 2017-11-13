@@ -40,6 +40,7 @@ public:
 //  void create_box(double h,double w,double d);
   void create_triangle();
 //  void create_ellipsoid(Ellipsoid *e);
+  void create_player(double xCenter,double yCenter,double radius);
 //  void create_cone(Cone *c);// double h, double radx,double rady);
   void clear();
   void remove_shape(int index);

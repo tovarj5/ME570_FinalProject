@@ -27,6 +27,9 @@ SET(MYSOURCE
 	mainwindow.ui
         Maze.h
         Maze.cpp
+        settingswindow.h
+        settingswindow.cpp
+        settingswindow.ui
     )
 add_executable(${PROJECT_NAME}
     ${MYSOURCE}

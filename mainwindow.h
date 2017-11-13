@@ -12,6 +12,9 @@
 #include <random>
 #include "osgwidget.h"
 #include "Maze.h"
+//#include <btBulletDynamicsCommon.h>
+//#include<btBulletCollisionCommon.h>
+//#include <Bullet3Common/b3AlignedAllocator.h>
 
 namespace Ui {
 class MainWindow;

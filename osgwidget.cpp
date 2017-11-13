@@ -611,57 +611,58 @@ void OSGWidget::clear()
 }
 
 //void OSGWidget::create_ellipsoid(Ellipsoid *e)
-//{
-//    double radx{0},rady{0},radz{0};
-//    double tx{0},ty{0},tz{0};
-//    double r{0},g{0},b{0};
-//    double rx{0},ry{0},rz{0};
-//    double sx{0},sy{0},sz{0};
-//    e->get_scale(sx,sy,sz);
-//    e->get_rotation(rx,ry,rz);
-//    e->get_color(r,g,b);
-//    e->get_size(radx,rady,radz);
-//    e->get_translation(tx,ty,tz);
-//    //osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0.f,0.f,1.f),0.5f);
-//    osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0,0,0),1.0f);
-//    osg::ShapeDrawable *sd = new osg::ShapeDrawable(sphere);
+void OSGWidget::create_player(double xCenter,double yCenter,double radius)
+{
+    double radx{1},rady{1},radz{1};
+    double tx{xCenter},ty{yCenter},tz{radius};
+    double r{0},g{1},b{0};
+    double rx{0},ry{0},rz{0};
+    double sx{radius},sy{radius},sz{radius};
+/*    e->get_scale(sx,sy,sz);
+    e->get_rotation(rx,ry,rz);
+    e->get_color(r,g,b);
+    e->get_size(radx,rady,radz);
+    e->get_translation(tx,ty,tz);*/
+    //osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0.f,0.f,1.f),0.5f);
+    osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0,0,0),1.0f);
+    osg::ShapeDrawable *sd = new osg::ShapeDrawable(sphere);
 
-//    //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
-//    sd->setColor(osg::Vec4(r,g,b,1.f));
-//    sd->setName("Ellipsoid1");
+    //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
+    sd->setColor(osg::Vec4(r,g,b,1.f));
+    sd->setName("SpherePlayer");
 
-//    osg::Geode *geode = new osg::Geode;
-//    geode->addDrawable(sd);
+    osg::Geode *geode = new osg::Geode;
+    geode->addDrawable(sd);
 
-//    // Set material for basic lighting and enable depth tests. Else, the box
-//    // will suffer from rendering errors.
-//    osg::StateSet* stateSet = geode->getOrCreateStateSet();
-//    osg::Material* material = new osg::Material;
+    // Set material for basic lighting and enable depth tests. Else, the box
+    // will suffer from rendering errors.
+    osg::StateSet* stateSet = geode->getOrCreateStateSet();
+    osg::Material* material = new osg::Material;
 
-//    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
+    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
 
-//    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
-//    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
+    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
+    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
 
 
-//    //Set up transform parent node.
-////    osg::MatrixTransform* transform= new osg::MatrixTransform;
-////    transform->setMatrix(osg::Matrix::translate(cx,cy,cz));
-//    osg::MatrixTransform* transform = new osg::MatrixTransform;
-// //   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
-//    osg::Matrix siz = osg::Matrix::scale(radx,rady,radz);
-//    osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
-//    osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
-//    osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
-//    osg::Matrix finalMatrix = siz*scale*rotate*trans;
-//    transform->setMatrix(finalMatrix);
+    //Set up transform parent node.
+//    osg::MatrixTransform* transform= new osg::MatrixTransform;
+//    transform->setMatrix(osg::Matrix::translate(cx,cy,cz));
+    osg::MatrixTransform* transform = new osg::MatrixTransform;
+ //   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
+    osg::Matrix siz = osg::Matrix::scale(radx,rady,radz);
+    osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
+    osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
+    osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
+    osg::Matrix finalMatrix = siz*scale*rotate*trans;
+    transform->setMatrix(finalMatrix);
 
-//    //Add shape to parent
-//    transform->addChild(geode);
+    //Add shape to parent
+    transform->addChild(geode);
 
-//    //Add transform to root
-//    mRoot->addChild(transform);
-//}
+    //Add transform to root
+    mRoot->addChild(transform);
+}
 
 //void OSGWidget::create_cone(Cone *c)//double h,double radx,double rady)
 //{
