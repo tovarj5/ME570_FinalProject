@@ -30,6 +30,16 @@ SET(MYSOURCE
         settingswindow.h
         settingswindow.cpp
         settingswindow.ui
+        ground.h
+        ground.cpp
+        BouncyBall.h
+        BouncyBall.cpp
+        player.h
+        player.cpp
+        enemy.h
+        enemy.cpp
+        getkeycode.h
+        getkeycode.cpp
     )
 add_executable(${PROJECT_NAME}
     ${MYSOURCE}
@@ -40,4 +50,5 @@ target_link_libraries(${PROJECT_NAME}
     ${OPENSCENEGRAPH_LIBRARIES}	
     Qt5::Widgets
     Qt5::Gui
+    ${BULLET_LIBRARIES}
 )

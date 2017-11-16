@@ -12,9 +12,11 @@
 #include <random>
 #include "osgwidget.h"
 #include "Maze.h"
-//#include <btBulletDynamicsCommon.h>
-//#include<btBulletCollisionCommon.h>
-//#include <Bullet3Common/b3AlignedAllocator.h>
+#include <QMessageBox>
+#include <btBulletDynamicsCommon.h>
+#include<btBulletCollisionCommon.h>
+#include <Bullet3Common/b3AlignedAllocator.h>
+#include <QKeyEvent>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +30,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void keyPressEvent(QKeyEvent* event);
+
 private slots:
     void on_actionStart_New_Game_triggered();
 
@@ -39,6 +44,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    //Maze *mazeObj{nullptr};
     struct Box
     {
         double xCenter{0};

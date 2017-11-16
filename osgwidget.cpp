@@ -28,7 +28,11 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
                                                             this->width(),
                                                             this->height() ) }
   , mViewer{ new osgViewer::CompositeViewer }
+  ,mBusy{false}
 {
+    //shart up physics engine for bullet
+    initPhysics();
+    mStarted = false;
 
     mRoot = new osg::Group;
 
@@ -37,6 +41,7 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
     //create_cone();
     //create_ellipsoid();
     Setup_Viewer();
+
 
     float aspectRatio = static_cast<float>( this->width() ) / static_cast<float>( this->height() );
     auto pixelRatio   = this->devicePixelRatio();
@@ -392,6 +397,15 @@ void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
 
 void OSGWidget::paintGL()
 {
+    if(mStarted)
+    {
+        osg::Timer_t now_tick = osg::Timer::instance()->tick();
+        float dt = osg::Timer::instance()->delta_s(mStartTick, now_tick);
+        mStartTick = now_tick;
+        /* int numSimSteps = */
+        mDynamicsWorld->stepSimulation(dt); //, 10, 0.01);
+        mDynamicsWorld->updateAabbs();
+    }
     mViewer->frame();
 }
 
@@ -664,259 +678,261 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
     mRoot->addChild(transform);
 }
 
-//void OSGWidget::create_cone(Cone *c)//double h,double radx,double rady)
-//{
-//    double h{0},radx{0},rady{0};
-//    double tx{0},ty{0},tz{0};
-//    double r{0},g{0},b{0};
-//    double rx{0},ry{0},rz{0};
-//    double sx{0},sy{0},sz{0};
-//    c->get_scale(sx,sy,sz);
-//    c->get_rotation(rx,ry,rz);
-//    c->get_color(r,g,b);
-//    c->get_translation(tx,ty,tz);
-//    osg::Cone *cone = new osg::Cone(osg::Vec3(1.f,1.f,1.f),0.5f,2.0f);
-//    //osg::Cone *cone = new osg::Cone(osg::Vec3(0,0,0),radx,h);
-//    osg::ShapeDrawable *sd = new osg::ShapeDrawable(cone);
-//    //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
-//    sd->setColor(osg::Vec4(r,g,b,1.f));
-//    sd->setName("Cone1");
+/*
+void OSGWidget::create_cone(Cone *c)//double h,double radx,double rady)
+{
+    double h{0},radx{0},rady{0};
+    double tx{0},ty{0},tz{0};
+    double r{0},g{0},b{0};
+    double rx{0},ry{0},rz{0};
+    double sx{0},sy{0},sz{0};
+    c->get_scale(sx,sy,sz);
+    c->get_rotation(rx,ry,rz);
+    c->get_color(r,g,b);
+    c->get_translation(tx,ty,tz);
+    osg::Cone *cone = new osg::Cone(osg::Vec3(1.f,1.f,1.f),0.5f,2.0f);
+    //osg::Cone *cone = new osg::Cone(osg::Vec3(0,0,0),radx,h);
+    osg::ShapeDrawable *sd = new osg::ShapeDrawable(cone);
+    //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
+    sd->setColor(osg::Vec4(r,g,b,1.f));
+    sd->setName("Cone1");
 
-//    osg::Geode *geode = new osg::Geode;
-//    geode->addDrawable(sd);
+    osg::Geode *geode = new osg::Geode;
+    geode->addDrawable(sd);
 
-//    // Set material for basic lighting and enable depth tests. Else, the box
-//    // will suffer from rendering errors.
-//    osg::StateSet* stateSet = geode->getOrCreateStateSet();
-//    osg::Material* material = new osg::Material;
+    // Set material for basic lighting and enable depth tests. Else, the box
+    // will suffer from rendering errors.
+    osg::StateSet* stateSet = geode->getOrCreateStateSet();
+    osg::Material* material = new osg::Material;
 
-//    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
+    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
 
-//    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
-//    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
+    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
+    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
 
 
-//    //Set up transform parent node.
-////    osg::MatrixTransform* transform= new osg::MatrixTransform;
-////    transform->setMatrix(osg::Matrix::translate(tx,ty,tz));
-//    //Create the parent transform node
-//    osg::MatrixTransform* transform = new osg::MatrixTransform;
-// //   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
-//    osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
-//    osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
-//    osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
-//    osg::Matrix finalMatrix = scale*rotate*trans;
-//    transform->setMatrix(finalMatrix);
-//    //Add shape to parent
-//    transform->addChild(geode);
+    //Set up transform parent node.
+//    osg::MatrixTransform* transform= new osg::MatrixTransform;
+//    transform->setMatrix(osg::Matrix::translate(tx,ty,tz));
+    //Create the parent transform node
+    osg::MatrixTransform* transform = new osg::MatrixTransform;
+ //   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
+    osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
+    osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
+    osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
+    osg::Matrix finalMatrix = scale*rotate*trans;
+    transform->setMatrix(finalMatrix);
+    //Add shape to parent
+    transform->addChild(geode);
 
-//    //Add transform to root
-//    mRoot->addChild(transform);
-//}
+    //Add transform to root
+    mRoot->addChild(transform);
+}
+*/
 
 void OSGWidget::remove_shape(int index)
 {
     mRoot->removeChild(index);
 }
 
+/*
+//void OSGWidget::create_box()
+void OSGWidget::create_box(Box *box)//double h,double w,double d)
+{
+    double h{0},w{0},d{0};
+    double r{0},g{0},b{0};
+    double tx{0},ty{0},tz{0};
+    double rx{0},ry{0},rz{0};
+    double sx{0},sy{0},sz{0};
+    box->get_scale(sx,sy,sz);
+    box->get_rotation(rx,ry,rz);
+    box->get_color(r,g,b);
+    box->get_size(h,w,d);
+    box->get_translation(tx,ty,tz);
+//
 
-////void OSGWidget::create_box()
-//void OSGWidget::create_box(Box *box)//double h,double w,double d)
-//{
-//    double h{0},w{0},d{0};
-//    double r{0},g{0},b{0};
-//    double tx{0},ty{0},tz{0};
-//    double rx{0},ry{0},rz{0};
-//    double sx{0},sy{0},sz{0};
-//    box->get_scale(sx,sy,sz);
-//    box->get_rotation(rx,ry,rz);
-//    box->get_color(r,g,b);
-//    box->get_size(h,w,d);
-//    box->get_translation(tx,ty,tz);
-////
+    //Define the geometry of the box
+   osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+   //Top plane triangle1
+   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
+   //top plane triangle2
+   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
+   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
+   //Bottom plane triangle1
+   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
+   //Bottom plane triangle2
+   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
 
-//    //Define the geometry of the box
-//   osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-//   //Top plane triangle1
-//   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
-//   //top plane triangle2
-//   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
-//   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
-//   //Bottom plane triangle1
-//   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
-//   //Bottom plane triangle2
-//   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
+   //side plane left triangle 1
+   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
+   //side plane left triangle 2
+   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
 
-//   //side plane left triangle 1
-//   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
-//   //side plane left triangle 2
-//   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
+   //side plane Right triangle 1
+   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
+   //side plane Right triangle 2
+   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
 
-//   //side plane Right triangle 1
-//   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
-//   //side plane Right triangle 2
-//   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
+   //front plane triangle 1
+   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
+   //front plane triangle 2
+   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
+   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
+   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
 
-//   //front plane triangle 1
-//   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
-//   //front plane triangle 2
-//   vertices->push_back(osg::Vec3(-w/2,d/2,h/2));
-//   vertices->push_back(osg::Vec3(-w/2,d/2,-h/2));
-//   vertices->push_back(osg::Vec3(w/2,d/2,-h/2));
+   //Back plane triangle 1
+   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
+   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
+   //Back plane triangle 2
+   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
+   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
 
-//   //Back plane triangle 1
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,h/2));
-//   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
-//   //Back plane triangle 2
-//   vertices->push_back(osg::Vec3(w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,-h/2));
-//   vertices->push_back(osg::Vec3(-w/2,-d/2,h/2));
+   osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array;
+   for(int i{0};i<6;i++)
+   {
+      normals->push_back(osg::Vec3(0,0,1));
+   }
 
-//   osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array;
-//   for(int i{0};i<6;i++)
-//   {
-//      normals->push_back(osg::Vec3(0,0,1));
-//   }
+//   normals->push_back(osg::Vec3(0,0,1));
+//   normals->push_back(osg::Vec3(0,0,1));
 
-////   normals->push_back(osg::Vec3(0,0,1));
-////   normals->push_back(osg::Vec3(0,0,1));
+//   normals->push_back(osg::Vec3(0,0,1));
+//   normals->push_back(osg::Vec3(0,0,1));
+//   normals->push_back(osg::Vec3(0,0,1));
 
-////   normals->push_back(osg::Vec3(0,0,1));
-////   normals->push_back(osg::Vec3(0,0,1));
-////   normals->push_back(osg::Vec3(0,0,1));
+   for(int i{0};i<6;i++)
+   {
+       normals->push_back(osg::Vec3(0,0,-1));
+   }
+//   normals->push_back(osg::Vec3(0,0,-1));
+//   normals->push_back(osg::Vec3(0,0,-1));
 
-//   for(int i{0};i<6;i++)
-//   {
-//       normals->push_back(osg::Vec3(0,0,-1));
-//   }
-////   normals->push_back(osg::Vec3(0,0,-1));
-////   normals->push_back(osg::Vec3(0,0,-1));
+//   normals->push_back(osg::Vec3(0,0,-1));
+//   normals->push_back(osg::Vec3(0,0,-1));
+//   normals->push_back(osg::Vec3(0,0,-1));
 
-////   normals->push_back(osg::Vec3(0,0,-1));
-////   normals->push_back(osg::Vec3(0,0,-1));
-////   normals->push_back(osg::Vec3(0,0,-1));
+   for(int i{0};i<6;i++)
+   {
+       normals->push_back(osg::Vec3(0,-1,0));
+   }
+//   normals->push_back(osg::Vec3(0,-1,0));
+//   normals->push_back(osg::Vec3(0,-1,0));
 
-//   for(int i{0};i<6;i++)
-//   {
-//       normals->push_back(osg::Vec3(0,-1,0));
-//   }
-////   normals->push_back(osg::Vec3(0,-1,0));
-////   normals->push_back(osg::Vec3(0,-1,0));
+//   normals->push_back(osg::Vec3(0,-1,0));
+//   normals->push_back(osg::Vec3(0,-1,0));
+//   normals->push_back(osg::Vec3(0,-1,0));
 
-////   normals->push_back(osg::Vec3(0,-1,0));
-////   normals->push_back(osg::Vec3(0,-1,0));
-////   normals->push_back(osg::Vec3(0,-1,0));
+   for(int i{0};i<6;i++)
+   {
+       normals->push_back(osg::Vec3(0,1,0));
+   }
+//   normals->push_back(osg::Vec3(0,1,0));
+//   normals->push_back(osg::Vec3(0,1,0));
 
-//   for(int i{0};i<6;i++)
-//   {
-//       normals->push_back(osg::Vec3(0,1,0));
-//   }
-////   normals->push_back(osg::Vec3(0,1,0));
-////   normals->push_back(osg::Vec3(0,1,0));
-
-////   normals->push_back(osg::Vec3(0,1,0));
-////   normals->push_back(osg::Vec3(0,1,0));
-////   normals->push_back(osg::Vec3(0,1,0));
-
-
-//   for(int i{0};i<6;i++)
-//   {
-//       normals->push_back(osg::Vec3(-1,0,0));
-//   }
-////   normals->push_back(osg::Vec3(-1,0,0));
-////   normals->push_back(osg::Vec3(-1,0,0));
-
-////   normals->push_back(osg::Vec3(-1,0,0));
-////   normals->push_back(osg::Vec3(-1,0,0));
-////   normals->push_back(osg::Vec3(-1,0,0));
-
-//   for(int i{0};i<6;i++)
-//   {
-//       normals->push_back(osg::Vec3(1,0,0));
-//   }
-////   normals->push_back(osg::Vec3(1,0,0));
-////   normals->push_back(osg::Vec3(1,0,0));
-
-////   normals->push_back(osg::Vec3(1,0,0));
-////   normals->push_back(osg::Vec3(1,0,0));
-////   normals->push_back(osg::Vec3(1,0,0));
-
-//   osg::ref_ptr<osg::DrawElementsUInt> indices = new osg::DrawElementsUInt( GL_TRIANGLES );
-//   for (int i{0}; i<36; i++)
-//       indices->push_back(i);
-
-//   //Define the triangle color
-//   osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-//   colors->push_back( osg::Vec4(r, g, b, 1) );
+//   normals->push_back(osg::Vec3(0,1,0));
+//   normals->push_back(osg::Vec3(0,1,0));
+//   normals->push_back(osg::Vec3(0,1,0));
 
 
+   for(int i{0};i<6;i++)
+   {
+       normals->push_back(osg::Vec3(-1,0,0));
+   }
+//   normals->push_back(osg::Vec3(-1,0,0));
+//   normals->push_back(osg::Vec3(-1,0,0));
 
+//   normals->push_back(osg::Vec3(-1,0,0));
+//   normals->push_back(osg::Vec3(-1,0,0));
+//   normals->push_back(osg::Vec3(-1,0,0));
 
-//   //Create the osg geometry for the triangle
-//   osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
-//   geom->setVertexArray( vertices.get() );
-//   geom->setNormalArray( normals.get() );
-//   geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-//   geom->setColorArray( colors.get() );
-//   geom->setColorBinding( osg::Geometry::BIND_OVERALL );
-//   geom->addPrimitiveSet( new osg::DrawArrays(GL_TRIANGLES, 0, 3) );
-//   geom->addPrimitiveSet( indices.get() );
+   for(int i{0};i<6;i++)
+   {
+       normals->push_back(osg::Vec3(1,0,0));
+   }
+//   normals->push_back(osg::Vec3(1,0,0));
+//   normals->push_back(osg::Vec3(1,0,0));
+
+//   normals->push_back(osg::Vec3(1,0,0));
+//   normals->push_back(osg::Vec3(1,0,0));
+//   normals->push_back(osg::Vec3(1,0,0));
+
+   osg::ref_ptr<osg::DrawElementsUInt> indices = new osg::DrawElementsUInt( GL_TRIANGLES );
+   for (int i{0}; i<36; i++)
+       indices->push_back(i);
+
+   //Define the triangle color
+   osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+   colors->push_back( osg::Vec4(r, g, b, 1) );
 
 
 
-//   //Set material for basic lighting and enable depth tests.
-//   osg::StateSet* stateSet = geom->getOrCreateStateSet();
-//   osg::Material* material = new osg::Material;
 
-//   material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
-//   stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
-//   stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
-
-
-//   //Create the node to hold the triangle
-//   osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-//   geode->addDrawable( geom.get() );
+   //Create the osg geometry for the triangle
+   osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+   geom->setVertexArray( vertices.get() );
+   geom->setNormalArray( normals.get() );
+   geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+   geom->setColorArray( colors.get() );
+   geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+   geom->addPrimitiveSet( new osg::DrawArrays(GL_TRIANGLES, 0, 3) );
+   geom->addPrimitiveSet( indices.get() );
 
 
-//   //Create the parent transform node
-//   osg::MatrixTransform* transform = new osg::MatrixTransform;
-////   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
-//   osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
-//   osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
-//   osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
-//   osg::Matrix finalMatrix = scale*rotate*trans;
-//   transform->setMatrix(finalMatrix);
 
-////   osg::MatrixTransform *translate = new osg::MatrixTransform;
-////   osg::Matrix mat = osg::Matrix::translate(tx,ty,tz);
-////   translate->setMatrix(mat);
+   //Set material for basic lighting and enable depth tests.
+   osg::StateSet* stateSet = geom->getOrCreateStateSet();
+   osg::Material* material = new osg::Material;
 
-//   //Add the triangle node to the parent
-//   transform->addChild(geode);
+   material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
+   stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
+   stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
 
-//   //Add the transform to the root
-//   mRoot->addChild(transform);
 
-//}
+   //Create the node to hold the triangle
+   osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+   geode->addDrawable( geom.get() );
 
+
+   //Create the parent transform node
+   osg::MatrixTransform* transform = new osg::MatrixTransform;
+//   osg::Matrix matrix = osg::Matrix::rotate(osg::DegreesToRadians((float)90),1,0,0);
+   osg::Matrix trans = osg::Matrix::translate(tx,ty,tz);
+   osg::Matrix rotate= osg::Matrix::rotate(osg::DegreesToRadians(rx),osg::Vec3(1,0,0),osg::DegreesToRadians(ry),osg::Vec3(0,1,0),osg::DegreesToRadians(rz),osg::Vec3(0,0,1));
+   osg::Matrix scale = osg::Matrix::scale(sx,sy,sz);
+   osg::Matrix finalMatrix = scale*rotate*trans;
+   transform->setMatrix(finalMatrix);
+
+//   osg::MatrixTransform *translate = new osg::MatrixTransform;
+//   osg::Matrix mat = osg::Matrix::translate(tx,ty,tz);
+//   translate->setMatrix(mat);
+
+   //Add the triangle node to the parent
+   transform->addChild(geode);
+
+   //Add the transform to the root
+   mRoot->addChild(transform);
+
+}
+*/
 
 
 void OSGWidget::go_home()
@@ -950,3 +966,107 @@ osgGA::EventQueue* OSGWidget::getEventQueue() const
         throw std::runtime_error( "Unable to obtain valid event queue");
 }
 
+void OSGWidget::initPhysics()
+{
+    // The BulletWidget owns and controls everything to do with
+    // the dynamics world. This call allocates the solvers
+    // and collision objects, and sets the gravity.
+    mBroadphaseInterface = new btDbvtBroadphase();
+    mDefaultCollisionConfig = new btDefaultCollisionConfiguration();
+    mCollisionDispatcher = new btCollisionDispatcher(mDefaultCollisionConfig);
+    mSeqImpConstraintSolver = new btSequentialImpulseConstraintSolver;
+    mDynamicsWorld = new btDiscreteDynamicsWorld(mCollisionDispatcher, mBroadphaseInterface,
+                                                mSeqImpConstraintSolver, mDefaultCollisionConfig);
+
+    mDynamicsWorld->setGravity(btVector3(0, 0, -1000));
+    mStartTick = osg::Timer::instance()->tick();
+    mTimeStep = 1/60.0;
+
+
+}
+
+
+void OSGWidget::start_timer()
+{
+    mStarted=true;
+    // And, start the timer.
+    mTimerId=startTimer(mTimeStep * 1000);
+}
+
+void OSGWidget::stop_timer()
+{
+    if(mStarted)
+    {
+        killTimer(mTimerId);
+        mTimerId=-1;
+        mStarted=false;
+    }
+}
+
+void OSGWidget::setup_single_ball()
+{
+    if(mBusy)
+    {
+        reset_world();
+    }
+    QVector3D pos;
+    QVector4D color;
+
+    QVector4D ground_color(.75,.75,.75,1);
+
+    // This creates and adds the ground to the world.
+    mGround= new Ground(4000,ground_color);
+    mRoot->addChild(mGround->getNode());
+    mDynamicsWorld->addRigidBody(mGround->getRigidBodyPtr());
+
+
+    pos=QVector3D(0,0,8000);
+    color =QVector4D(1,0,1,1);
+    mBouncyBall=new BouncyBall(pos, color, 100, 100);
+
+    // Here, we ask the ball for its btRigidBody*,
+    // which is added into the world, free to interact with
+    // everything else in the world.
+
+    mDynamicsWorld->addRigidBody(mBouncyBall->getRigidBodyPtr());
+    mRoot->addChild(mBouncyBall->getNode());
+
+    mBusy=true;
+
+
+}
+
+void OSGWidget::timerEvent(QTimerEvent *)
+{
+    update();
+}
+
+void OSGWidget::reset_world()
+{
+    if(mBusy)
+    {
+        stop_timer();
+        while(mRoot->getNumChildren())
+        {
+            osg::Node* child=mRoot->getChild(0);
+            mRoot->removeChild(child);
+
+        }
+
+
+
+        delete mDynamicsWorld;
+        mDynamicsWorld=nullptr;
+
+
+        delete mBouncyBall;
+        mBouncyBall=nullptr;
+
+
+        delete mGround;
+        initPhysics();
+        mBusy=false;
+
+    }
+
+}

@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "Maze.h"
 #include "settingswindow.h"
+#include "getkeycode.h"
+#include "btBulletDynamicsCommon.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +15,45 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    QMessageBox *msgbox = new QMessageBox;
+
+    if(event->key()==Qt::Key_Up)
+    {
+        msgbox->setText(QString("UP"));
+    }
+    else if(event->key()==Qt::Key_Down)
+    {
+        msgbox->setText(QString("Down"));
+    }
+    else if(event->key()==Qt::Key_Left)
+    {
+        msgbox->setText(QString("Left"));
+    }
+    else if(event->key()==Qt::Key_Right)
+    {
+        msgbox->setText(QString("Right"));
+    }
+    else if(event->key()==Qt::Key_A)
+    {
+
+    }
+    else if(event->key()==Qt::Key_S)
+    {
+
+    }
+    else if(event->key()==Qt::Key_D)
+    {
+
+    }
+    else if(event->key()==Qt::Key_W)
+    {
+
+    }
+    msgbox->show();
 }
 
 /*void Line( unsigned char* img, int x1, int y1, int x2, int y2 )
@@ -193,6 +234,7 @@ void MainWindow::on_actionStart_New_Game_triggered()
     {
         ui->osgGraphicWidget->create_wall(a, b, c, d);
     });
+    //mazeObj = m;
 }
 
 void MainWindow::on_actionClear_Maze_triggered()
@@ -204,11 +246,29 @@ void MainWindow::on_actionClear_Maze_triggered()
 
 void MainWindow::on_actionBouncy_Ball_Example_triggered()
 {
+//    getKeyCode w;
+//    w.show();
 
+//    Qt::Key_Right;
+//    Qt::Key_Left;
+//    Qt::Key_Down;
+//    Qt::Key_Up;
+//    Qt::Key_A;
+//    Qt::Key_S;
+//    Qt::Key_D;
+//    Qt::Key_W;
+    ui->osgGraphicWidget->setup_single_ball();
+    ui->osgGraphicWidget->start_timer();
 }
 
 void MainWindow::on_actionMaze_Settings_triggered()
 {
     settingswindow *settings = new settingswindow;
     settings->show();
+    double mazeSize = settings->getMazeSize();
+    double mazeCells= settings->getCellSize();
+    QMessageBox *msgbox = new QMessageBox;
+    msgbox->setText(QString::number(mazeSize) + "|"+ QString::number(mazeCells));
+    msgbox->show();
 }
+

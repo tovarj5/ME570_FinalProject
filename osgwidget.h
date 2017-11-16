@@ -22,7 +22,9 @@
 #include <osgGA/TrackballManipulator>
 #include <osgText/Text>
 
-
+#include <btBulletDynamicsCommon.h>
+#include "BouncyBall.h"
+#include "ground.h"
 
 
 class OSGWidget : public QOpenGLWidget
@@ -47,6 +49,12 @@ public:
   void create_wall(double xCenter,double yCenter,double xWidth,double yHeight);
   void create_outerWalls();
 
+  //Bullet Function Calls
+  void start_timer();
+  void stop_timer();
+  void setup_single_ball();
+  void reset_world();
+
 protected:
 
   virtual void paintEvent( QPaintEvent* paintEvent );
@@ -62,6 +70,7 @@ protected:
   virtual void wheelEvent( QWheelEvent* event );
 
   virtual bool event( QEvent* event );
+  void timerEvent(QTimerEvent *);
 
 private:
   void Setup_Viewer();
@@ -80,6 +89,26 @@ private:
   osg::ref_ptr<osgViewer::CompositeViewer> mViewer;
   osg::ref_ptr<osg::Group> mRoot;
   osg::ref_ptr<osgGA::TrackballManipulator> mManipulator;
+
+  //Bullet Private Variables.
+  btBroadphaseInterface* mBroadphaseInterface;
+  btDefaultCollisionConfiguration* mDefaultCollisionConfig;
+  btCollisionDispatcher* mCollisionDispatcher;
+  btSequentialImpulseConstraintSolver* mSeqImpConstraintSolver;
+  btDiscreteDynamicsWorld* mDynamicsWorld;
+
+  double mTimeStep;
+  bool mStarted;
+  int mTimerId{0};
+
+  Ground* mGround;
+  BouncyBall* mBouncyBall;
+  void initPhysics();
+  void createWorld();
+
+  osg::Timer_t mStartTick;
+
+  bool mBusy;
 };
 
 #endif
