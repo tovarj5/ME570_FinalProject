@@ -1,5 +1,5 @@
 //-------------------------------------------------------
-// Filename: Ground.cpp
+// Filename: bulletWall.cpp
 //
 // Description:  The cpp file for the qt5 bullet bouncy ball example.
 //
@@ -9,19 +9,19 @@
 //
 // Owner: Corey McBride
 //-------------------------------------------------------
-#include "ground.h"
+#include "bulletWall.h"
 #include <osg/Geometry>
 #include <osg/Material>
 #include <osg/Geode>
 #include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 
-Ground::Ground()
+bulletWall::bulletWall()
 {
   mSize=1000;
   create();
 }
-Ground::Ground(int size, QVector4D& color)
+bulletWall::bulletWall(int size, QVector4D& color)
 {
     mSize=size;
     mColor=color;
@@ -29,11 +29,16 @@ Ground::Ground(int size, QVector4D& color)
     create();
 }
 
-Ground::Ground(double xCenter, double yCenter, double xWidth, double yHeight)
+bulletWall::bulletWall(double xCenter, double yCenter, double xWidth, double yHeight,QVector4D& color)
 {
-
+    mxCenter = xCenter;
+    myCenter = yCenter;
+    mxWidth = xWidth;
+    myHeight = yHeight;
+    mColor = color;
+    create();
 }
-Ground::Ground(osg::Vec3 pos, int size, QVector4D& color)
+bulletWall::bulletWall(osg::Vec3 pos, int size, QVector4D& color)
 {
     mSize=size;
     mColor=color;
@@ -41,21 +46,22 @@ Ground::Ground(osg::Vec3 pos, int size, QVector4D& color)
     create();
 }
 
-void Ground::create()
+void bulletWall::create()
 {
-    mGroundShape = new btBoxShape(btVector3(mSize,mSize,mSize*.005));
-    mGroundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,-mSize*.005)));
-    mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mGroundMotionState,mGroundShape,btVector3(0,0,0));
-    mRigidCI->m_restitution = 0.4;
+    mbulletWallShape = new btBoxShape(btVector3(mxWidth,myHeight,20.f*0.5));
+    mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,20*.5)));
+    mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
+    mRigidCI->m_restitution = 0.4; //This can change to make the maze/level more difficult.
     mRigidBody = new btRigidBody(*mRigidCI);
     create_mesh();
 }
-void Ground::create_mesh()
+void bulletWall::create_mesh()
 {
-    mOSGBox  = new osg::Box( mPos , mSize,mSize,mSize*.005 );//osg::Vec3( 0.f, 0.f, 0.f )
+    mOSGBox  = new osg::Box( osg::Vec3(mxCenter,myCenter,10) , mxWidth,myHeight,20 );//osg::Vec3( 0.f, 0.f, 0.f )
     osg::ShapeDrawable* sd = new osg::ShapeDrawable( mOSGBox );
+    //sd->setColor(osg::Vec4(0.2,0.2,0.2));
     sd->setColor(  osg::Vec4(mColor[0], mColor[1], mColor[2],mColor[3]));
-    sd->setName( "Ground" );
+    sd->setName( "bulletWall" );
 
     osg::Geode* geode = new osg::Geode;
     geode->addDrawable( sd );
@@ -77,15 +83,15 @@ void Ground::create_mesh()
 
 }
 
-void Ground::destroy()
+void bulletWall::destroy()
 {
     delete mRigidBody;
     delete mRigidCI;
-    delete mGroundShape;
-    delete mGroundMotionState;
+    delete mbulletWallShape;
+    delete mbulletWallMotionState;
 }
 
-void Ground::draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix)
+void bulletWall::draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix)
 {
     // This part of the code updates the rigid body
     // position in the bullet world. It also gets that
@@ -95,7 +101,7 @@ void Ground::draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix)
 
     M=QMatrix4x4(btMat);
     M=M.transposed();
-    M.translate(0,0,-mSize*.01);
+    M.translate(mxCenter,myCenter,10);
 
 
 

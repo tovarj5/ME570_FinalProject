@@ -10,6 +10,7 @@
 #include <random>
 #include "mainwindow.h"
 #include <functional>
+#include <osg/MatrixTransform>
 
 class OSGWidget;
 
@@ -25,6 +26,33 @@ private:
         eDirection_Down    = 4,
         eDirection_Left    = 8
     };
+    struct wall
+    {
+        double mXcenter{0};
+        double mYCenter{0};
+        double mXwidth{0};
+        double mYheight{0};
+        wall(double xc,double yc, double xw,double yh)
+        {
+            mXcenter = xc;
+            mYCenter = yc;
+            mXwidth = xw;
+            mYheight = yh;
+        }
+    };
+//    struct osgWall
+//    {
+//        osg::Geode *mGeode{nullptr};
+//        osg::MatrixTransform *mTransform{nullptr};
+//        osgWall(osg::Geode *geo, osg::MatrixTransform *trsfm)
+//        {
+//            mGeode = geo;
+//            mTransform = trsfm;
+//        }
+//    };
+
+    std::list<wall> MazeWallList;
+    //std::list<osg::MatrixTransform> mazeTransform;
 
 //void SaveBMP( const char* FileName, const void* RawBGRImage, int Width, int Height );
 

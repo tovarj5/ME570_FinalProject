@@ -245,8 +245,17 @@ void Maze::Line(unsigned char *img, int x1, int y1, int x2, int y2, std::functio
         yCenter = (y1+y2)/2;
         yHeight = 10;
     }
-    OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
-//    OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
+
+    if (xCenter == ImageSize )//&& yCenter==ImageSize-(ImageSize/NumCells))
+    {
+        xCenter = xCenter*2;
+    }
+//    else
+//    {
+        MazeWallList.push_back(wall(xCenter,yCenter,xWidth,yHeight));
+        OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
+    //    OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
+//     }
 }
 
 void Maze::RenderMaze( unsigned char* img )

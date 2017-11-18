@@ -25,6 +25,7 @@
 #include <btBulletDynamicsCommon.h>
 #include "BouncyBall.h"
 #include "ground.h"
+#include "bulletWall.h"
 
 
 class OSGWidget : public QOpenGLWidget
@@ -102,6 +103,7 @@ private:
   int mTimerId{0};
 
   Ground* mGround;
+  bulletWall *mWall;
   BouncyBall* mBouncyBall;
   void initPhysics();
   void createWorld();

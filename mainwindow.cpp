@@ -224,17 +224,19 @@ void MainWindow::on_actionStart_New_Game_triggered()
 {
     on_actionClear_Maze_triggered();
 
-    double x{0},y{0},z{0},w{0};
-    ui->osgGraphicWidget->create_wall(x,y,z,w);
+//    double x{0},y{0},z{0},w{0};
+  //  ui->osgGraphicWidget->create_wall(x,y,z,w);
     Maze *m = new Maze;
     double player{m->getMazeSize()/(m->getNumCells()*2)};
     ui->osgGraphicWidget->create_player(player,player,player/2);
+    //ui->osgGraphicWidget->create_ground();
 
     m->MakeMaze([this](double a, double b, double c, double d)
     {
         ui->osgGraphicWidget->create_wall(a, b, c, d);
     });
     //mazeObj = m;
+    ui->osgGraphicWidget->start_timer();
 }
 
 void MainWindow::on_actionClear_Maze_triggered()

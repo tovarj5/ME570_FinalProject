@@ -38,8 +38,8 @@ SET(MYSOURCE
         player.cpp
         enemy.h
         enemy.cpp
-        getkeycode.h
-        getkeycode.cpp
+        bulletWall.h
+        bulletWall.cpp
     )
 add_executable(${PROJECT_NAME}
     ${MYSOURCE}

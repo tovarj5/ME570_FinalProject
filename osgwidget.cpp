@@ -20,7 +20,6 @@
 #include <QPainter>
 #include <QWheelEvent>
 
-
 OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
     QOpenGLWidget( parent,f ),
     mGraphicsWindow{ new osgViewer::GraphicsWindowEmbedded( this->x(),
@@ -233,9 +232,23 @@ void OSGWidget::Setup_Viewer()
         //Add transform to root
         mRoot->addChild(transform);
     }
-    void OSGWidget::create_ground()
+
+void OSGWidget::create_ground()
 {
-    //Create the box
+
+    //Bullet Create ground.
+    QVector4D ground_color(0.9,0.9,0.9,1);
+    osg::Vec3 groundPos = osg::Vec3(500.f,500.f,0.f);
+
+    // This creates and adds the ground to the world.
+    mGround= new Ground(groundPos,1000,ground_color);
+    //Add bullet node for OSGWidget
+    mRoot->addChild(mGround->getNode());
+    mDynamicsWorld->addRigidBody(mGround->getRigidBodyPtr());
+
+
+    /*
+    //Create the box (OSG option)
     osg::Box* box    = new osg::Box( osg::Vec3( 0.f, 0.f, 0.f ), 1.0f );
     osg::ShapeDrawable* sd = new osg::ShapeDrawable( box );
     sd->setColor( osg::Vec4( 0.9f, 0.9f, 0.9f, 1.f ) );
@@ -265,6 +278,7 @@ void OSGWidget::Setup_Viewer()
 
     //Add transform to root
     mRoot->addChild(transform);
+    */
     }
 
     void OSGWidget::create_outerWalls()
@@ -323,6 +337,18 @@ void OSGWidget::Setup_Viewer()
 
     void OSGWidget::create_wall(double xCenter, double yCenter, double xWidth, double yHeight)
     {
+        //Bullet Create ground.
+        QVector4D wall_color(0.5,0,0.9,1);
+        osg::Vec3 groundPos = osg::Vec3(500.f,500.f,0.f);
+
+
+        // This creates and adds the ground to the world.
+        mWall= new bulletWall(xCenter,yCenter,xWidth,yHeight,wall_color);//(groundPos,1000,ground_color);
+        //Add bullet node for OSGWidget
+        mRoot->addChild(mWall->getNode());
+        mDynamicsWorld->addRigidBody(mWall->getRigidBodyPtr());
+
+        /*
         //Create the box
         osg::Box* box    = new osg::Box( osg::Vec3( 0.f, 0.f, 0.f ), 1.f );
         osg::ShapeDrawable* sd = new osg::ShapeDrawable( box );
@@ -353,9 +379,10 @@ void OSGWidget::Setup_Viewer()
 
         //Add transform to root
         mRoot->addChild(transform);
+        */
     }
 
-
+/*
 //void OSGWidget::create_shape(Shape *s)
 //{
 ////    QMessageBox *msgbox = new QMessageBox;
@@ -380,7 +407,7 @@ void OSGWidget::Setup_Viewer()
 //    }
 ////    msgbox->show();
 //}
-
+*/
 void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
 {
     this->makeCurrent();
@@ -620,43 +647,66 @@ void OSGWidget::clear()
     create_box1();
     create_box2();
     create_box3();
-    create_ground();
+    //create_ground();
     //create_outerWalls();
 }
 
 //void OSGWidget::create_ellipsoid(Ellipsoid *e)
 void OSGWidget::create_player(double xCenter,double yCenter,double radius)
 {
+    if(mBusy)
+    {
+        reset_world();
+    }
+    //Bullet Variables
+    QVector3D pos;
+    QVector4D color;
+
+
+    // common osg variables
     double radx{1},rady{1},radz{1};
-    double tx{xCenter},ty{yCenter},tz{radius};
-    double r{0},g{1},b{0};
+    double tx{xCenter},ty{yCenter},tz{radius*4};
+    double r{0},g{1},b{1};
     double rx{0},ry{0},rz{0};
     double sx{radius},sy{radius},sz{radius};
-/*    e->get_scale(sx,sy,sz);
+
+
+    // functions used when creating based on shapes.
+    /*    e->get_scale(sx,sy,sz);
     e->get_rotation(rx,ry,rz);
     e->get_color(r,g,b);
     e->get_size(radx,rady,radz);
     e->get_translation(tx,ty,tz);*/
     //osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0.f,0.f,1.f),0.5f);
-    osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0,0,0),1.0f);
-    osg::ShapeDrawable *sd = new osg::ShapeDrawable(sphere);
 
+    //OSG create Sphere
+    //osg::Sphere *sphere = new osg::Sphere(osg::Vec3(0,0,0),1.0f);
+    //osg::ShapeDrawable *sd = new osg::ShapeDrawable(sphere);
+
+    //Bullet Create Sphere.
+    pos=QVector3D(tx,ty,tz);
+    color =QVector4D(r,g,b,1); //rgb
+    int mass{10};
+    mBouncyBall=new BouncyBall(pos, color, mass, radius);
+
+    create_ground();
+/*
     //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
-    sd->setColor(osg::Vec4(r,g,b,1.f));
-    sd->setName("SpherePlayer");
+    //sd->setColor(osg::Vec4(r,g,b,1.f));
+    //sd->setName("SpherePlayer");
 
-    osg::Geode *geode = new osg::Geode;
-    geode->addDrawable(sd);
+    //osg::Geode *geode = new osg::Geode;
+    //geode->addDrawable(sd);
 
     // Set material for basic lighting and enable depth tests. Else, the box
     // will suffer from rendering errors.
-    osg::StateSet* stateSet = geode->getOrCreateStateSet();
-    osg::Material* material = new osg::Material;
+    //osg::StateSet* stateSet = geode->getOrCreateStateSet();
+    //osg::Material* material = new osg::Material;
 
-    material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
+    //material->setColorMode( osg::Material::AMBIENT_AND_DIFFUSE );
 
-    stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
-    stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
+    //stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
+    //stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
 
 
     //Set up transform parent node.
@@ -676,6 +726,26 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
 
     //Add transform to root
     mRoot->addChild(transform);
+    */
+
+
+
+
+/*
+    //Set up transform parent node.
+    osg::MatrixTransform* PlayerTransform= new osg::MatrixTransform;
+    //osg::Matrix pscale = osg::Matrix::scale(1000.0f,1000.0f,0.01f);
+    osg::Matrix ptrans = osg::Matrix::translate(500.f,500.f,0.f);
+    PlayerTransform->setMatrix(ptrans);
+    PlayerTransform->addChild(mBouncyBall->getNode());
+    // Here, we ask the ball for its btRigidBody*,
+    // which is added into the world, free to interact with
+    // everything else in the world.
+*/
+    mDynamicsWorld->addRigidBody(mBouncyBall->getRigidBodyPtr());
+    mRoot->addChild(mBouncyBall->getNode());
+
+    mBusy=true;
 }
 
 /*
@@ -1003,6 +1073,7 @@ void OSGWidget::stop_timer()
     }
 }
 
+
 void OSGWidget::setup_single_ball()
 {
     if(mBusy)
@@ -1012,22 +1083,37 @@ void OSGWidget::setup_single_ball()
     QVector3D pos;
     QVector4D color;
 
-    QVector4D ground_color(.75,.75,.75,1);
+    QVector4D ground_color(.3,.3,.3,1);
+    osg::Vec3 groundPos = osg::Vec3(500,500,0);
 
     // This creates and adds the ground to the world.
-    mGround= new Ground(4000,ground_color);
+    mGround= new Ground(groundPos,1500,ground_color);
+
+//    //Set up transform parent node.
+//    osg::MatrixTransform* transform= new osg::MatrixTransform;
+//    osg::Matrix scale = osg::Matrix::scale(1000.0f,1000.0f,0.01f);
+//    osg::Matrix trans = osg::Matrix::translate(500.f,500.f,0.f);
+//    transform->setMatrix(scale*trans);
+//    transform->addChild(mGround->getNode());
+
     mRoot->addChild(mGround->getNode());
     mDynamicsWorld->addRigidBody(mGround->getRigidBodyPtr());
 
 
-    pos=QVector3D(0,0,8000);
-    color =QVector4D(1,0,1,1);
-    mBouncyBall=new BouncyBall(pos, color, 100, 100);
-
+    pos=QVector3D(500,500,1000);
+    color =QVector4D(0,1,1,1);
+    mBouncyBall=new BouncyBall(pos, color, 10, 10);
+/*
+    //Set up transform parent node.
+    osg::MatrixTransform* PlayerTransform= new osg::MatrixTransform;
+    //osg::Matrix pscale = osg::Matrix::scale(1000.0f,1000.0f,0.01f);
+    osg::Matrix ptrans = osg::Matrix::translate(500.f,500.f,0.f);
+    PlayerTransform->setMatrix(ptrans);
+    PlayerTransform->addChild(mBouncyBall->getNode());
     // Here, we ask the ball for its btRigidBody*,
     // which is added into the world, free to interact with
     // everything else in the world.
-
+*/
     mDynamicsWorld->addRigidBody(mBouncyBall->getRigidBodyPtr());
     mRoot->addChild(mBouncyBall->getNode());
 

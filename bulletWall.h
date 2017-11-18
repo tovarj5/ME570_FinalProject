@@ -1,5 +1,5 @@
 //-------------------------------------------------------
-// Filename: Ground.h
+// Filename: bulletWall.h
 //
 // Description:  The h file for the qt5 bullet bouncy ball example.
 //
@@ -10,31 +10,33 @@
 // Owner: Corey McBride
 //-------------------------------------------------------
 
-#ifndef GROUND_H
-#define GROUND_H
+#ifndef BULLETWALL_H
+#define BULLETWALL_H
 #include <QMatrix4x4>
 #include "btBulletDynamicsCommon.h"
 #include <osg/MatrixTransform>
 #include <osg/ShapeDrawable>
 
-class Ground
+class bulletWall
 {
 public:
-    Ground();
-    Ground(int size,QVector4D& color);
-    Ground(double xCenter,double yCenter,double xWidth,double yHeight);
+    bulletWall();
+    bulletWall(int size,QVector4D& color);
+    bulletWall(double xCenter, double yCenter, double xWidth, double yHeight, QVector4D &color);
     btRigidBody* getRigidBodyPtr() {return mRigidBody;}
     osg::Node* getNode() {return mTransform.release();}
 
     void draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix);
 
 
-    Ground(osg::Vec3 pos, int size, QVector4D &color);
+    bulletWall(osg::Vec3 pos, int size, QVector4D &color);
 private:
     double mSize;
+    double mxCenter{0},myCenter{0};
+    double mxWidth{0},myHeight{0},mzHeight{0};
     osg::Vec3 mPos;
-    btCollisionShape* mGroundShape;
-    btDefaultMotionState* mGroundMotionState;
+    btCollisionShape* mbulletWallShape;
+    btDefaultMotionState* mbulletWallMotionState;
     btRigidBody* mRigidBody;
     btRigidBody::btRigidBodyConstructionInfo* mRigidCI;
     btScalar btMat[16];
@@ -52,4 +54,4 @@ private:
 
 };
 
-#endif // GROUND_H
+#endif // bulletWall_H
