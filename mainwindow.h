@@ -31,9 +31,13 @@ public:
     ~MainWindow();
 
 protected:
-    void keyPressEvent(QKeyEvent* event);
+    //QEvent::KeyPress(QKeyEvent *event);
+    //QEvent::KeyRelease(QKeyEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
+    void keyPressEvent(QKeyEvent* event);
+
     void on_actionStart_New_Game_triggered();
 
     void on_actionClear_Maze_triggered();

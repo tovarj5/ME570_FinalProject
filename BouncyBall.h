@@ -29,6 +29,9 @@ public:
 
     btRigidBody* getRigidBodyPtr() {return rigidBody;}
     osg::Node* getNode() {return mTransform.release();}
+    void moveBall(btVector3 velocity);
+    btVector3 getBallVelocity();
+
 private:
     std::vector<GLfloat> mColors;
     btCollisionShape* mSphereShape;
@@ -55,6 +58,7 @@ private:
 
     osg::ref_ptr<osg::MatrixTransform> mTransform;
     osg::ref_ptr<osg::Sphere> mOSGSphere;
+    osg::Geode *mgeode;
 };
 
 #endif // BOUNCYBALL_H

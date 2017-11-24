@@ -57,7 +57,7 @@ void BouncyBall::create()
                                                        btVector3(mResetPosition[0], mResetPosition[1], mResetPosition[2])));
     inertia = new btVector3(0, 0, 0);
     mSphereShape->calculateLocalInertia(mMass, *inertia);
-    btVector3 velocity = btVector3(300,300,0);
+    btVector3 velocity = btVector3(0,100,0);
 
     rigidCI = new btRigidBody::btRigidBodyConstructionInfo(mMass, motionState, mSphereShape, *inertia);
     rigidCI->m_restitution = 0.9;
@@ -88,7 +88,7 @@ void BouncyBall::create()
         stateSet->setAttributeAndModes( material, osg::StateAttribute::ON );
         stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
     }
-
+    mgeode = geode;
     mTransform->addChild(geode);
 }
 
@@ -125,3 +125,16 @@ BouncyBall::~BouncyBall()
 {
     destroy();
 }
+
+void BouncyBall::moveBall(btVector3 velocity)
+{
+    rigidBody->setLinearVelocity(velocity);
+}
+
+btVector3 BouncyBall::getBallVelocity()
+{
+    return rigidBody->getLinearVelocity();
+}
+
+
+

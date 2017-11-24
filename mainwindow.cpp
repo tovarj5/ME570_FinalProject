@@ -10,12 +10,81 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    qApp->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+       {
+           QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+              qDebug() << "key " << keyEvent->key() << "from" << obj;
+
+              QMessageBox *msgbox = new QMessageBox;
+              btVector3 currentVelocity{ui->osgGraphicWidget->getRigidBodyVelocity()};
+              btVector3 velocity{0,0,0};
+              float addSpeed{500.0};
+              if(keyEvent->key()==Qt::Key_Up)
+              {
+//                  msgbox->setText(QString("UP"));
+                  velocity = {0,addSpeed,0};
+//                  velocity = currentVelocity+velocity;
+//                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+              else if(keyEvent->key()==Qt::Key_Down)
+              {
+//                  msgbox->setText(QString("Down"));
+                  velocity={0,-addSpeed,0};
+//                  velocity = currentVelocity+velocity;
+//                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+              else if(keyEvent->key()==Qt::Key_Left)
+              {
+//                  msgbox->setText(QString("Left"));
+                  velocity={-addSpeed,0,0};
+//                  velocity = currentVelocity+velocity;
+//                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+              else if(keyEvent->key()==Qt::Key_Right)
+              {
+//                  msgbox->setText(QString("Right"));
+                  velocity= {addSpeed,0,0};
+//                  velocity = currentVelocity+velocity;
+//                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+              else if(keyEvent->key()==Qt::Key_0)
+              {
+//                  msgbox->setText(QString("Right"));
+                  velocity={0,0,-addSpeed};
+//                  velocity = currentVelocity+velocity;
+//                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+              else if(keyEvent->key()==Qt::Key_9)
+              {
+//                  msgbox->setText(QString("Right"));
+                  velocity={0,0,addSpeed};
+              }
+              else
+              {}
+
+//              int maxVel{300};
+//              if(velocity[0]<maxVel || velocity[1]<maxVel ||velocity[2]<maxVel)
+                  //velocity = currentVelocity+velocity;
+
+              ui->osgGraphicWidget->moveBall(velocity);
+//                  msgbox->show();
+       }
+       return QObject::eventFilter(obj, event);
+}
+
+//int QEvent::KeyPress(QKeyEvent::key())
+//{
+//}
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
@@ -24,18 +93,26 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if(event->key()==Qt::Key_Up)
     {
         msgbox->setText(QString("UP"));
+        btVector3 velocity{0,100,0};
+        ui->osgGraphicWidget->moveBall(velocity);
     }
     else if(event->key()==Qt::Key_Down)
     {
         msgbox->setText(QString("Down"));
+        btVector3 velocity{0,-100,0};
+        ui->osgGraphicWidget->moveBall(velocity);
     }
     else if(event->key()==Qt::Key_Left)
     {
         msgbox->setText(QString("Left"));
+        btVector3 velocity{-100,0,0};
+        ui->osgGraphicWidget->moveBall(velocity);
     }
     else if(event->key()==Qt::Key_Right)
     {
         msgbox->setText(QString("Right"));
+        btVector3 velocity{100,0,0};
+        ui->osgGraphicWidget->moveBall(velocity);
     }
     else if(event->key()==Qt::Key_A)
     {
@@ -53,8 +130,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
 
     }
+    else if (event->key()==Qt::Key_0)
+    {
+        btVector3 velocity{0,0,300};
+        ui->osgGraphicWidget->moveBall(velocity);
+    }
     msgbox->show();
+
 }
+
 
 /*void Line( unsigned char* img, int x1, int y1, int x2, int y2 )
 {

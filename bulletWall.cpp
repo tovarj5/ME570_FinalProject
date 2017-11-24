@@ -18,7 +18,7 @@
 
 bulletWall::bulletWall()
 {
-  mSize=1000;
+  //mSize=1000;
   create();
 }
 bulletWall::bulletWall(int size, QVector4D& color)
@@ -40,7 +40,7 @@ bulletWall::bulletWall(double xCenter, double yCenter, double xWidth, double yHe
 }
 bulletWall::bulletWall(osg::Vec3 pos, int size, QVector4D& color)
 {
-    mSize=size;
+    //mSize=size;
     mColor=color;
     mPos = pos;
     create();
@@ -48,10 +48,11 @@ bulletWall::bulletWall(osg::Vec3 pos, int size, QVector4D& color)
 
 void bulletWall::create()
 {
-    mbulletWallShape = new btBoxShape(btVector3(mxWidth,myHeight,20.f*0.5));
-    mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,20*.5)));
+    mbulletWallShape = new btBoxShape(btVector3(mxWidth,myHeight,20*0.5));
+    mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(mxCenter,myCenter,20*.5)));
+
     mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
-    mRigidCI->m_restitution = 0.4; //This can change to make the maze/level more difficult.
+    mRigidCI->m_restitution = 0.8; //This can change to make the maze/level more difficult.
     mRigidBody = new btRigidBody(*mRigidCI);
     create_mesh();
 }

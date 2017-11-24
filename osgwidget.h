@@ -55,6 +55,8 @@ public:
   void stop_timer();
   void setup_single_ball();
   void reset_world();
+  void moveBall(btVector3 velocity);
+  btVector3 getRigidBodyVelocity();
 
 protected:
 

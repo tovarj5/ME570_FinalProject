@@ -343,7 +343,7 @@ void OSGWidget::create_ground()
 
 
         // This creates and adds the ground to the world.
-        mWall= new bulletWall(xCenter,yCenter,xWidth,yHeight,wall_color);//(groundPos,1000,ground_color);
+        mWall= new bulletWall(xCenter,yCenter,xWidth/2,yHeight/2,wall_color);//(groundPos,1000,ground_color);
         //Add bullet node for OSGWidget
         mRoot->addChild(mWall->getNode());
         mDynamicsWorld->addRigidBody(mWall->getRigidBodyPtr());
@@ -1155,4 +1155,14 @@ void OSGWidget::reset_world()
 
     }
 
+}
+
+void OSGWidget::moveBall(btVector3 velocity)
+{
+    mBouncyBall->moveBall(velocity);
+}
+
+btVector3 OSGWidget::getRigidBodyVelocity()
+{
+    return mBouncyBall->getBallVelocity();
 }
