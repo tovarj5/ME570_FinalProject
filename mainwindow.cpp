@@ -34,49 +34,83 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 //                  msgbox->setText(QString("UP"));
                   velocity = {0,addSpeed,0};
 //                  velocity = currentVelocity+velocity;
-//                  ui->osgGraphicWidget->moveBall(velocity);
+                  ui->osgGraphicWidget->moveBall(velocity);
               }
               else if(keyEvent->key()==Qt::Key_Down)
               {
 //                  msgbox->setText(QString("Down"));
                   velocity={0,-addSpeed,0};
 //                  velocity = currentVelocity+velocity;
-//                  ui->osgGraphicWidget->moveBall(velocity);
+                  ui->osgGraphicWidget->moveBall(velocity);
               }
               else if(keyEvent->key()==Qt::Key_Left)
               {
 //                  msgbox->setText(QString("Left"));
                   velocity={-addSpeed,0,0};
 //                  velocity = currentVelocity+velocity;
-//                  ui->osgGraphicWidget->moveBall(velocity);
+                  ui->osgGraphicWidget->moveBall(velocity);
               }
               else if(keyEvent->key()==Qt::Key_Right)
               {
 //                  msgbox->setText(QString("Right"));
                   velocity= {addSpeed,0,0};
 //                  velocity = currentVelocity+velocity;
-//                  ui->osgGraphicWidget->moveBall(velocity);
+                  ui->osgGraphicWidget->moveBall(velocity);
               }
               else if(keyEvent->key()==Qt::Key_0)
               {
 //                  msgbox->setText(QString("Right"));
                   velocity={0,0,-addSpeed};
 //                  velocity = currentVelocity+velocity;
-//                  ui->osgGraphicWidget->moveBall(velocity);
+                  ui->osgGraphicWidget->moveBall(velocity);
               }
               else if(keyEvent->key()==Qt::Key_9)
               {
 //                  msgbox->setText(QString("Right"));
                   velocity={0,0,addSpeed};
+                  ui->osgGraphicWidget->moveBall(velocity);
+              }
+//              else{}
+
+              else if(keyEvent->key()==Qt::Key_Q)
+              {
+                  mPlayer2Index = mPlayer2Index-1;
+                  ui->osgGraphicWidget->nextWall(mPlayer2Index);
+              }
+              else if (keyEvent->key()==Qt::Key_E)
+              {
+                  mPlayer2Index = mPlayer2Index +1;
+                  ui->osgGraphicWidget->nextWall(mPlayer2Index);
+              }
+              else if(keyEvent->key()==Qt::Key_A)
+              {
+                  ui->osgGraphicWidget->moveWallDown();
+              }
+              else if(keyEvent->key()==Qt::Key_S)
+              {
+                  ui->osgGraphicWidget->moveWallDown();
+              }
+              else if(keyEvent->key()==Qt::Key_D)
+              {
+                  ui->osgGraphicWidget->moveWallUp();
+              }
+              else if(keyEvent->key()==Qt::Key_W)
+              {
+                  ui->osgGraphicWidget->moveWallUp();
               }
               else
               {}
+
+              if(keyEvent->key()==Qt::Key_Space)
+              {
+                  on_actionStart_New_Game_triggered();
+              }
 
 //              int maxVel{300};
 //              if(velocity[0]<maxVel || velocity[1]<maxVel ||velocity[2]<maxVel)
                   //velocity = currentVelocity+velocity;
 
-              ui->osgGraphicWidget->moveBall(velocity);
+//              ui->osgGraphicWidget->moveBall(velocity);
 //                  msgbox->show();
        }
        return QObject::eventFilter(obj, event);
@@ -114,22 +148,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         btVector3 velocity{100,0,0};
         ui->osgGraphicWidget->moveBall(velocity);
     }
-    else if(event->key()==Qt::Key_A)
-    {
 
-    }
-    else if(event->key()==Qt::Key_S)
-    {
-
-    }
-    else if(event->key()==Qt::Key_D)
-    {
-
-    }
-    else if(event->key()==Qt::Key_W)
-    {
-
-    }
     else if (event->key()==Qt::Key_0)
     {
         btVector3 velocity{0,0,300};
@@ -350,7 +369,7 @@ void MainWindow::on_actionBouncy_Ball_Example_triggered()
 void MainWindow::on_actionMaze_Settings_triggered()
 {
     settingswindow *settings = new settingswindow;
-    settings->show();
+    settings->exec();
     double mazeSize = settings->getMazeSize();
     double mazeCells= settings->getCellSize();
     QMessageBox *msgbox = new QMessageBox;

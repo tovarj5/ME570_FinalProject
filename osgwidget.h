@@ -57,6 +57,10 @@ public:
   void reset_world();
   void moveBall(btVector3 velocity);
   btVector3 getRigidBodyVelocity();
+  void nextWall(int index);
+  void previousWall(int index);
+  void moveWallDown();
+  void moveWallUp();
 
 protected:
 
@@ -109,10 +113,12 @@ private:
   BouncyBall* mBouncyBall;
   void initPhysics();
   void createWorld();
+  bulletWall *currentSelectedWall;
 
   osg::Timer_t mStartTick;
 
   bool mBusy;
+  std::list<bulletWall*> mplayer2WallList;
 };
 
 #endif

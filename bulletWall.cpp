@@ -59,11 +59,13 @@ void bulletWall::create()
 void bulletWall::create_mesh()
 {
     mOSGBox  = new osg::Box( osg::Vec3(mxCenter,myCenter,10) , mxWidth,myHeight,20 );//osg::Vec3( 0.f, 0.f, 0.f )
+
     osg::ShapeDrawable* sd = new osg::ShapeDrawable( mOSGBox );
     //sd->setColor(osg::Vec4(0.2,0.2,0.2));
     sd->setColor(  osg::Vec4(mColor[0], mColor[1], mColor[2],mColor[3]));
     sd->setName( "bulletWall" );
-
+    //This is used so that a second player can go through the list of maze walls.
+    mWallShape = sd;
     osg::Geode* geode = new osg::Geode;
     geode->addDrawable( sd );
 
@@ -106,5 +108,36 @@ void bulletWall::draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix)
 
 
 
+}
+
+void bulletWall::changeWallColor(osg::Vec4 color)
+{
+    mWallShape->setColor(color);
+}
+
+void bulletWall::translateWall(bool up)
+{
+    destroy();
+    bool valid{false};
+    if(mxWidth==5.f)
+    {
+        if (up)
+            myCenter = myCenter + myHeight;
+        else
+            myCenter = myCenter-myHeight;
+
+        valid = true;
+    }
+    else if(myHeight==5.f)
+    {
+        if(up)
+            mxCenter = mxCenter + mxWidth;
+        else
+            mxCenter = mxCenter - mxWidth;
+
+        valid = true;
+    }
+    if(valid)
+        create();
 }
 

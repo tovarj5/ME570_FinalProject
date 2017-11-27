@@ -27,8 +27,8 @@ public:
     osg::Node* getNode() {return mTransform.release();}
 
     void draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix);
-
-
+    void changeWallColor(osg::Vec4 color);
+    void translateWall(bool up);
     bulletWall(osg::Vec3 pos, int size, QVector4D &color);
 private:
     double mSize;
@@ -43,6 +43,7 @@ private:
     QMatrix4x4  M;
     btTransform trans;
     QVector4D mColor;
+    osg::ShapeDrawable *mWallShape;
 
 
     void create();

@@ -48,7 +48,18 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    int mPlayer2Index{10};
     //Maze *mazeObj{nullptr};
+
+    //struct settings
+
+        int mDifficulty{1};
+        int mPlayers{1};
+        bool mSolidWalls{true};
+        double mMazeSize{1000};
+        float mWallRebound{0.1};
+
+
     struct Box
     {
         double xCenter{0};

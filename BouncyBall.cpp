@@ -57,7 +57,7 @@ void BouncyBall::create()
                                                        btVector3(mResetPosition[0], mResetPosition[1], mResetPosition[2])));
     inertia = new btVector3(0, 0, 0);
     mSphereShape->calculateLocalInertia(mMass, *inertia);
-    btVector3 velocity = btVector3(0,100,0);
+    btVector3 velocity = btVector3(0,0,0);
 
     rigidCI = new btRigidBody::btRigidBodyConstructionInfo(mMass, motionState, mSphereShape, *inertia);
     rigidCI->m_restitution = 0.9;

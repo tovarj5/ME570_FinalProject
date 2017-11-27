@@ -64,7 +64,7 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
     mManipulator->setAllowThrow( false );
 
     view->setCameraManipulator( mManipulator );
-    mManipulator->setTransformation(osg::Vec3d(2,0,0),osg::Vec3d(0,0,0),osg::Vec3d(0,0,1));
+    mManipulator->setTransformation(osg::Vec3d(2,0,0),osg::Vec3d(0,2,0),osg::Vec3d(0,0,1));
 
     mViewer->addView( view );
     mViewer->setThreadingModel( osgViewer::CompositeViewer::SingleThreaded );
@@ -345,6 +345,7 @@ void OSGWidget::create_ground()
         // This creates and adds the ground to the world.
         mWall= new bulletWall(xCenter,yCenter,xWidth/2,yHeight/2,wall_color);//(groundPos,1000,ground_color);
         //Add bullet node for OSGWidget
+        mplayer2WallList.push_back(mWall);
         mRoot->addChild(mWall->getNode());
         mDynamicsWorld->addRigidBody(mWall->getRigidBodyPtr());
 
@@ -1053,6 +1054,49 @@ void OSGWidget::initPhysics()
     mTimeStep = 1/60.0;
 
 
+}
+
+void OSGWidget::nextWall(int index)
+{
+    osg::Vec4 selectedColor{1,0,0,1};
+    osg::Vec4 nonSelectedColor{0.5,0,0.9,1};
+    int i{0};
+    for(bulletWall *wal:mplayer2WallList)
+    {
+        if(i>0 && i==index-1)
+            wal->changeWallColor(nonSelectedColor);
+
+        if(i==index)
+        {
+            wal->changeWallColor(selectedColor);
+            currentSelectedWall=wal;
+        }
+        if(i>0 && i==index+1 &&i<mplayer2WallList.size())
+            wal->changeWallColor(nonSelectedColor);
+
+        i++;
+    }
+//    osg::Node *player2WallNode = mRoot->getChild(index);
+//    mplayer2Wall = qobject_cast<bulletWall*>(player2WallNode);
+//    if(mplayer2Wall != nullptr)
+//    {
+
+    //    }
+}
+
+void OSGWidget::previousWall(int index)
+{
+
+}
+
+void OSGWidget::moveWallDown()
+{
+    currentSelectedWall->translateWall(false);
+}
+
+void OSGWidget::moveWallUp()
+{
+    currentSelectedWall->translateWall(true);
 }
 
 

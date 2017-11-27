@@ -2,7 +2,7 @@
 #include "ui_settingswindow.h"
 
 settingswindow::settingswindow(QWidget *parent) :
-    QMainWindow(parent),
+    QDialog(parent),
     ui(new Ui::settingswindow)
 {
     ui->setupUi(this);
@@ -46,5 +46,10 @@ bool settingswindow::applySettings()
 void settingswindow::on_pushButton_3_clicked()
 {
     applied = false;
-    //settingswindow.close();
+    settingswindow.close();
+}
+
+void settingswindow::on_ApplyPushButton_clicked()
+{
+
 }
