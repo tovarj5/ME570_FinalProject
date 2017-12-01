@@ -51,7 +51,7 @@ private:
 //        }
 //    };
 
-    std::list<wall> MazeWallList;
+    std::list<wall*> MazeWallList;
     //std::list<osg::MatrixTransform> mazeTransform;
 
 //void SaveBMP( const char* FileName, const void* RawBGRImage, int Width, int Height );
@@ -114,6 +114,7 @@ public:
 Maze();
 void MakeMaze();
 void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
+void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall, double mazeSize, double cells);
 void GenerateMaze();
 int getMazeSize();
 void setMazeSize(int siz);

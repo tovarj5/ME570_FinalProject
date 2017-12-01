@@ -129,11 +129,22 @@ BouncyBall::~BouncyBall()
 void BouncyBall::moveBall(btVector3 velocity)
 {
     rigidBody->setLinearVelocity(velocity);
+
 }
 
 btVector3 BouncyBall::getBallVelocity()
 {
-    return rigidBody->getLinearVelocity();
+    if (rigidBody)
+        return rigidBody->getLinearVelocity();
+    else
+        return btVector3();
+}
+
+btVector3 BouncyBall::getBallPosition()
+{
+//    btVector3 bodyPos{rigidBody->getCenterOfMassPosition()};
+//    std::vector<double> pos{bodyPos.getX()}
+    return rigidBody->getCenterOfMassPosition();
 }
 
 

@@ -17,6 +17,7 @@
 #include<btBulletCollisionCommon.h>
 #include <Bullet3Common/b3AlignedAllocator.h>
 #include <QKeyEvent>
+#include <vector>
 
 namespace Ui {
 class MainWindow;
@@ -48,15 +49,17 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    int mPlayer2Index{10};
-    //Maze *mazeObj{nullptr};
-
+    int mPlayer2Index{20};
+    //std::list<Maze*> MazeList;
+    double mMazeSize{500*2};
+    double mNumCells{100/6};
+    bool mazeGenerated{false};
     //struct settings
 
         int mDifficulty{1};
         int mPlayers{1};
         bool mSolidWalls{true};
-        double mMazeSize{1000};
+        //double mMazeSize{1000};
         float mWallRebound{0.1};
 
 

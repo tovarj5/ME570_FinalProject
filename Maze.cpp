@@ -252,7 +252,8 @@ void Maze::Line(unsigned char *img, int x1, int y1, int x2, int y2, std::functio
     }
 //    else
 //    {
-        MazeWallList.push_back(wall(xCenter,yCenter,xWidth,yHeight));
+    wall *newWall = new wall(xCenter,yCenter,xWidth,yHeight);
+        MazeWallList.push_back(newWall);//new wall(xCenter,yCenter,xWidth,yHeight));
         OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
     //    OSGcreateWall(xCenter,yCenter,xWidth,yHeight);
 //     }
@@ -316,9 +317,9 @@ Maze::Maze()
 void Maze::MakeMaze()
 {
     //graphic = wid;
-    PrintBanner();
+//    PrintBanner();
 
-    std::cout << "Generating " << NumCells << " x " << NumCells << " maze into " << ImageSize << " x " << ImageSize << " bitmap" << std::endl;
+//    std::cout << "Generating " << NumCells << " x " << NumCells << " maze into " << ImageSize << " x " << ImageSize << " bitmap" << std::endl;
 
     // prepare PRNG
     gen.seed( time( NULL ) );
@@ -352,6 +353,42 @@ void Maze::MakeMaze()
 
 void Maze::MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall)
 {
+    // prepare PRNG
+    gen.seed( time( NULL ) );
+
+    // clear maze
+    std::fill( g_Maze, g_Maze + NumCells * NumCells, 0 );
+
+    // setup initial point
+    g_PtX = RandomInt();
+    g_PtY = RandomInt();
+
+    // traverse
+    GenerateMaze();
+
+    // prepare BGR image
+    size_t DataSize = 3 * ImageSize * ImageSize;
+
+    unsigned char* Img = new unsigned char[ DataSize ];
+
+    memset( Img, 0, DataSize );
+
+    // render maze on bitmap
+    RenderMaze( Img, OSGcreateWall );
+
+    //SaveBMP( "Maze.bmp", Img, ImageSize, ImageSize );
+
+    // cleanup
+    delete[]( Img );
+
+}
+
+void Maze::MakeMaze(std::function<void (double, double, double, double)> OSGcreateWall, double mazeSize, double cells)
+{
+    //Update Maze Parameters
+    ImageSize = mazeSize;
+    NumCells = static_cast<int>(cells);
+
     // prepare PRNG
     gen.seed( time( NULL ) );
 

@@ -31,12 +31,13 @@ public:
     osg::Node* getNode() {return mTransform.release();}
     void moveBall(btVector3 velocity);
     btVector3 getBallVelocity();
+    btVector3 getBallPosition();
 
 private:
     std::vector<GLfloat> mColors;
-    btCollisionShape* mSphereShape;
-    btMotionState* motionState;
-    btRigidBody* rigidBody;
+    btCollisionShape* mSphereShape {nullptr};
+    btMotionState* motionState {nullptr};
+    btRigidBody* rigidBody {nullptr};
     btRigidBody::btRigidBodyConstructionInfo* rigidCI;
 
 

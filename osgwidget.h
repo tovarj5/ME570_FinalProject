@@ -44,7 +44,7 @@ public:
   void create_triangle();
 //  void create_ellipsoid(Ellipsoid *e);
   void create_player(double xCenter,double yCenter,double radius);
-//  void create_cone(Cone *c);// double h, double radx,double rady);
+  void create_cone();//Cone *c);// double h, double radx,double rady);
   void clear();
   void remove_shape(int index);
   void create_wall(double xCenter,double yCenter,double xWidth,double yHeight);
@@ -53,7 +53,7 @@ public:
   //Bullet Function Calls
   void start_timer();
   void stop_timer();
-  void setup_single_ball();
+  void setup_single_ball(osg::Vec3 groundPos, double groundSize);
   void reset_world();
   void moveBall(btVector3 velocity);
   btVector3 getRigidBodyVelocity();
@@ -61,6 +61,9 @@ public:
   void previousWall(int index);
   void moveWallDown();
   void moveWallUp();
+  void create_ground(osg::Vec3 groundPos,double groundSize);
+  void deleteWall();
+  bool checkPlayerWin();
 
 protected:
 
@@ -84,7 +87,6 @@ private:
   void create_box1();
   void create_box2();
   void create_box3();
-  void create_ground();
 
 
   virtual void go_home();
@@ -110,10 +112,11 @@ private:
 
   Ground* mGround;
   bulletWall *mWall;
-  BouncyBall* mBouncyBall;
+  BouncyBall* mBouncyBall {nullptr};
   void initPhysics();
   void createWorld();
   bulletWall *currentSelectedWall;
+  std::vector<double> mfinishPos{0,0,0};
 
   osg::Timer_t mStartTick;
 

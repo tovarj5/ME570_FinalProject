@@ -8,6 +8,7 @@
 // Creation Date: 11/7/17
 //
 // Owner: Corey McBride
+// Editor: Jacob Tovar
 //-------------------------------------------------------
 #include "bulletWall.h"
 #include <osg/Geometry>
@@ -16,9 +17,35 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 
+class BallUpdateCallback: public osg::NodeCallback
+{
+private:
+    btRigidBody *_body;
+
+public:
+    BallUpdateCallback(btRigidBody *body) :
+        _body(body)
+    {
+    }
+
+    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    {
+        btScalar m[16];
+
+        btDefaultMotionState* myMotionState = (btDefaultMotionState*) _body->getMotionState();
+        myMotionState->m_graphicsWorldTrans.getOpenGLMatrix(m);
+
+        osg::Matrixf mat(m);
+
+        osg::MatrixTransform *pat = dynamic_cast<osg::MatrixTransform *> (node);
+        pat->setMatrix(mat);
+
+        traverse(node, nv);
+    }
+};
+
 bulletWall::bulletWall()
 {
-  //mSize=1000;
   create();
 }
 bulletWall::bulletWall(int size, QVector4D& color)
@@ -58,7 +85,7 @@ void bulletWall::create()
 }
 void bulletWall::create_mesh()
 {
-    mOSGBox  = new osg::Box( osg::Vec3(mxCenter,myCenter,10) , mxWidth,myHeight,20 );//osg::Vec3( 0.f, 0.f, 0.f )
+    mOSGBox  = new osg::Box( osg::Vec3(0,0,10) , mxWidth,myHeight,20 );//osg::Vec3( 0.f, 0.f, 0.f )
 
     osg::ShapeDrawable* sd = new osg::ShapeDrawable( mOSGBox );
     //sd->setColor(osg::Vec4(0.2,0.2,0.2));
@@ -81,8 +108,8 @@ void bulletWall::create_mesh()
         stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
     }
     mTransform = new osg::MatrixTransform;
-
     mTransform->addChild(geode);
+    mTransform->setUpdateCallback(new BallUpdateCallback(mRigidBody));
 
 }
 
@@ -94,50 +121,70 @@ void bulletWall::destroy()
     delete mbulletWallMotionState;
 }
 
-void bulletWall::draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix)
-{
-    // This part of the code updates the rigid body
-    // position in the bullet world. It also gets that
-    // position as an OpenGL format.
-    mRigidBody->getMotionState()->getWorldTransform(trans);
-    trans.getOpenGLMatrix(btMat);
 
-    M=QMatrix4x4(btMat);
-    M=M.transposed();
-    M.translate(mxCenter,myCenter,10);
-
-
-
-}
 
 void bulletWall::changeWallColor(osg::Vec4 color)
 {
     mWallShape->setColor(color);
 }
 
+//Move OSG and Bullet wall to new location
 void bulletWall::translateWall(bool up)
 {
-    destroy();
     bool valid{false};
+    osg::Matrix trans;
+    btTransform bulletPos;
+
+    mbulletWallMotionState->getWorldTransform(bulletPos);
+    btVector3 pos = bulletPos.getOrigin();//mRigidBody->getCenterOfMassPosition();
+
+    //Check if wall is horizontal or vertical
     if(mxWidth==5.f)
     {
+        //Vertical Wall
         if (up)
-            myCenter = myCenter + myHeight;
+        {
+            pos.setY(pos.getY() + btScalar(myHeight));
+//            bulletPos.setOrigin(btVector3(0,myHeight,0));
+//            mRigidBody->translate(btVector3(0,myHeight,0));
+            //trans = {osg::Matrix::translate(0,myHeight,0)};
+        }
+            //myCenter = myCenter + myHeight;
         else
-            myCenter = myCenter-myHeight;
-
+        {
+            pos.setY(pos.getY() - btScalar(myHeight));
+//            mRigidBody->translate(btVector3(0,-myHeight,0));
+//            trans = {osg::Matrix::translate(0,-myHeight,0)};
+//            myCenter = myCenter-myHeight;
+        }
         valid = true;
     }
     else if(myHeight==5.f)
     {
+        //horizontal wall
         if(up)
-            mxCenter = mxCenter + mxWidth;
-        else
-            mxCenter = mxCenter - mxWidth;
+        {
+            pos.setX(pos.getX() + btScalar(myHeight));
 
+            mRigidBody->translate(btVector3(mxWidth,0,0));
+//            trans={osg::Matrix::translate(mxWidth,0,0)};
+//            mxCenter = mxCenter + mxWidth;
+        }
+        else
+        {
+            pos.setX(pos.getX() - btScalar(myHeight));
+            mRigidBody->translate(btVector3(-mxWidth,0,0));
+//            trans={osg::Matrix::translate(mxWidth,0,0)};
+            //mxCenter = mxCenter - mxWidth;
+        }
+
+//        mTransform->setMatrix(trans);
         valid = true;
+        mRigidBody->setCenterOfMassTransform(bulletPos);
+
     }
-    if(valid)
-        create();
+
+//    if(valid)
+//        create();
 }
 

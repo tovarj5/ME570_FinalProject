@@ -43,8 +43,9 @@ Ground::Ground(osg::Vec3 pos, int size, QVector4D& color)
 
 void Ground::create()
 {
-    mGroundShape = new btBoxShape(btVector3(mSize,mSize,mSize*.005));
-    mGroundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,-mSize*.005)));
+    mGroundShape = new btBoxShape(btVector3(mSize/2,mSize/2,mSize/2*.005));
+    mGroundMotionState = new btDefaultMotionState(btTransform(btQuaternion(mSize/2,mSize/2,0,1),btVector3(mSize/2,mSize/2,-mSize*.005)));
+
     mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mGroundMotionState,mGroundShape,btVector3(0,0,0));
     mRigidCI->m_restitution = 0.4;
     mRigidBody = new btRigidBody(*mRigidCI);

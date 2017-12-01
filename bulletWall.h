@@ -24,9 +24,8 @@ public:
     bulletWall(int size,QVector4D& color);
     bulletWall(double xCenter, double yCenter, double xWidth, double yHeight, QVector4D &color);
     btRigidBody* getRigidBodyPtr() {return mRigidBody;}
-    osg::Node* getNode() {return mTransform.release();}
+    osg::Node* getNode() {return mTransform.get();}
 
-    void draw(QMatrix4x4 &V_matrix, QMatrix4x4 &P_matrix);
     void changeWallColor(osg::Vec4 color);
     void translateWall(bool up);
     bulletWall(osg::Vec3 pos, int size, QVector4D &color);

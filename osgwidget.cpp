@@ -63,8 +63,10 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
     mManipulator = new osgGA::TrackballManipulator;
     mManipulator->setAllowThrow( false );
 
+
     view->setCameraManipulator( mManipulator );
-    mManipulator->setTransformation(osg::Vec3d(2,0,0),osg::Vec3d(0,2,0),osg::Vec3d(0,0,1));
+    //where camera is located, looking location,  which direction is up
+    mManipulator->setHomePosition(osg::Vec3d(500,-500,2000),osg::Vec3d(500,500,0),osg::Vec3d(0,0,1));
 
     mViewer->addView( view );
     mViewer->setThreadingModel( osgViewer::CompositeViewer::SingleThreaded );
@@ -126,10 +128,13 @@ void OSGWidget::Setup_Viewer()
 
     //Add transform to root
     mRoot->addChild(transform);
+
+    //Create coordinate origin vectors
     create_box1();
     create_box2();
     create_box3();
-    create_ground();
+
+//    create_ground();
     create_outerWalls();
 
 }
@@ -233,19 +238,21 @@ void OSGWidget::Setup_Viewer()
         mRoot->addChild(transform);
     }
 
-void OSGWidget::create_ground()
+void OSGWidget::create_ground(osg::Vec3 groundPos, double groundSize)
 {
+    QVector4D groundColor(0.3,0.3,0.3,1);
+    Ground *mazeFloor = new Ground(groundPos,groundSize,groundColor);
 
-    //Bullet Create ground.
-    QVector4D ground_color(0.9,0.9,0.9,1);
-    osg::Vec3 groundPos = osg::Vec3(500.f,500.f,0.f);
+//    //Bullet Create ground.
+//    QVector4D ground_color(0.9,0.9,0.9,1);
+//    osg::Vec3 groundPos = osg::Vec3(500.f,500.f,0.f);
 
-    // This creates and adds the ground to the world.
-    mGround= new Ground(groundPos,1000,ground_color);
-    //Add bullet node for OSGWidget
-    mRoot->addChild(mGround->getNode());
-    mDynamicsWorld->addRigidBody(mGround->getRigidBodyPtr());
-
+//    // This creates and adds the ground to the world.
+//    mGround= new Ground(groundPos,1000,ground_color);
+//    //Add bullet node for OSGWidget
+    mRoot->addChild(mazeFloor->getNode());//mGround->getNode());
+    mDynamicsWorld->addRigidBody(mazeFloor->getRigidBodyPtr());//mGround->getRigidBodyPtr());
+    mGround = mazeFloor;
 
     /*
     //Create the box (OSG option)
@@ -279,7 +286,34 @@ void OSGWidget::create_ground()
     //Add transform to root
     mRoot->addChild(transform);
     */
+}
+
+void OSGWidget::deleteWall()
+{
+
+}
+
+bool OSGWidget::checkPlayerWin()
+{
+    btVector3 ballPos{mBouncyBall->getBallPosition()};
+    double tolerance{30};
+    double xball{static_cast<double>(ballPos.getX())};
+    double yball{static_cast<double>(ballPos.getY())};
+    double zball{static_cast<double>(ballPos.getZ())};
+    //double xfinish{static_cast<double>(mfinishPos.)
+
+//    if((ballPos.getX() == mfinishPos[0] +tolerance || ballPos.getX() ==mfinishPos[0] -tolerance)
+//            && (ballPos.getY() == mfinishPos[1] + tolerance || ballPos.getY() == mfinishPos[1] - tolerance))
+    if((xball<=mfinishPos[0] +tolerance && xball >= mfinishPos[0] -tolerance) &&
+            (yball <= mfinishPos[1] + tolerance && yball >= mfinishPos[1] - tolerance) &&
+            (zball <= mfinishPos[2] + tolerance && zball >= mfinishPos[2] - tolerance))
+    {
+        return true;
     }
+    else
+        return false;
+
+}
 
     void OSGWidget::create_outerWalls()
     {
@@ -690,7 +724,7 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
     int mass{10};
     mBouncyBall=new BouncyBall(pos, color, mass, radius);
 
-    create_ground();
+    //create_ground();
 /*
     //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
     //sd->setColor(osg::Vec4(r,g,b,1.f));
@@ -749,24 +783,28 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
     mBusy=true;
 }
 
-/*
-void OSGWidget::create_cone(Cone *c)//double h,double radx,double rady)
+
+void OSGWidget::create_cone()//Cone *c)//double h,double radx,double rady)
 {
     double h{0},radx{0},rady{0};
-    double tx{0},ty{0},tz{0};
-    double r{0},g{0},b{0};
+    int High{1000},Low{0};
+    int finishLocX{qrand() % ((High + 1) - Low) + Low};
+    int finishLocY{qrand() % ((High + 1) - Low) + Low};
+    mfinishPos = std::vector<double>{finishLocX,finishLocY,10};
+    double tx{static_cast<double>(finishLocX)},ty{static_cast<double>(finishLocY)},tz{-10};
+    double r{0.1},g{1},b{0};
     double rx{0},ry{0},rz{0};
-    double sx{0},sy{0},sz{0};
-    c->get_scale(sx,sy,sz);
-    c->get_rotation(rx,ry,rz);
-    c->get_color(r,g,b);
-    c->get_translation(tx,ty,tz);
+    double sx{25},sy{25},sz{50};
+//    c->get_scale(sx,sy,sz);
+//    c->get_rotation(rx,ry,rz);
+//    c->get_color(r,g,b);
+//    c->get_translation(tx,ty,tz);
     osg::Cone *cone = new osg::Cone(osg::Vec3(1.f,1.f,1.f),0.5f,2.0f);
     //osg::Cone *cone = new osg::Cone(osg::Vec3(0,0,0),radx,h);
     osg::ShapeDrawable *sd = new osg::ShapeDrawable(cone);
     //sd->setColor(osg::Vec4(1.0f,0.f,0.f,1.f));
     sd->setColor(osg::Vec4(r,g,b,1.f));
-    sd->setName("Cone1");
+    sd->setName("FinishCone");
 
     osg::Geode *geode = new osg::Geode;
     geode->addDrawable(sd);
@@ -799,7 +837,7 @@ void OSGWidget::create_cone(Cone *c)//double h,double radx,double rady)
     //Add transform to root
     mRoot->addChild(transform);
 }
-*/
+
 
 void OSGWidget::remove_shape(int index)
 {
@@ -1118,7 +1156,7 @@ void OSGWidget::stop_timer()
 }
 
 
-void OSGWidget::setup_single_ball()
+void OSGWidget::setup_single_ball(osg::Vec3 groundPos,double groundSize)
 {
     if(mBusy)
     {
@@ -1128,10 +1166,11 @@ void OSGWidget::setup_single_ball()
     QVector4D color;
 
     QVector4D ground_color(.3,.3,.3,1);
-    osg::Vec3 groundPos = osg::Vec3(500,500,0);
+    //osg::Vec3 groundPos = osg::Vec3(500,500,0);
+    //1500 for screen size
 
     // This creates and adds the ground to the world.
-    mGround= new Ground(groundPos,1500,ground_color);
+    mGround= new Ground(groundPos,groundSize,ground_color);
 
 //    //Set up transform parent node.
 //    osg::MatrixTransform* transform= new osg::MatrixTransform;
@@ -1208,5 +1247,8 @@ void OSGWidget::moveBall(btVector3 velocity)
 
 btVector3 OSGWidget::getRigidBodyVelocity()
 {
-    return mBouncyBall->getBallVelocity();
+    if (mBouncyBall)
+        return mBouncyBall->getBallVelocity();
+    else
+        return btVector3();
 }
