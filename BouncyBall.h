@@ -28,7 +28,7 @@ public:
     ~BouncyBall();
 
     btRigidBody* getRigidBodyPtr() {return rigidBody;}
-    osg::Node* getNode() {return mTransform.release();}
+    osg::Node* getNode() {return mTransform.get();}
     void moveBall(btVector3 velocity);
     btVector3 getBallVelocity();
     btVector3 getBallPosition();

@@ -29,9 +29,11 @@ public:
     void changeWallColor(osg::Vec4 color);
     void translateWall(bool up);
     bulletWall(osg::Vec3 pos, int size, QVector4D &color);
+    void getWallDim(double *xCenter, double *yCenter);
+
 private:
     double mSize;
-    double mxCenter{0},myCenter{0};
+    double *mxCenter{0},*myCenter{0};
     double mxWidth{0},myHeight{0},mzHeight{0};
     osg::Vec3 mPos;
     btCollisionShape* mbulletWallShape;

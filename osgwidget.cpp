@@ -135,7 +135,7 @@ void OSGWidget::Setup_Viewer()
     create_box3();
 
 //    create_ground();
-    create_outerWalls();
+    create_outerWalls(1000.f);
 
 }
     void OSGWidget::create_box1()
@@ -253,7 +253,7 @@ void OSGWidget::create_ground(osg::Vec3 groundPos, double groundSize)
     mRoot->addChild(mazeFloor->getNode());//mGround->getNode());
     mDynamicsWorld->addRigidBody(mazeFloor->getRigidBodyPtr());//mGround->getRigidBodyPtr());
     mGround = mazeFloor;
-
+    mplayer2WallList.clear();
     /*
     //Create the box (OSG option)
     osg::Box* box    = new osg::Box( osg::Vec3( 0.f, 0.f, 0.f ), 1.0f );
@@ -296,7 +296,7 @@ void OSGWidget::deleteWall()
 bool OSGWidget::checkPlayerWin()
 {
     btVector3 ballPos{mBouncyBall->getBallPosition()};
-    double tolerance{30};
+    double tolerance{35}; // Add to the settings window.
     double xball{static_cast<double>(ballPos.getX())};
     double yball{static_cast<double>(ballPos.getY())};
     double zball{static_cast<double>(ballPos.getZ())};
@@ -315,19 +315,29 @@ bool OSGWidget::checkPlayerWin()
 
 }
 
-    void OSGWidget::create_outerWalls()
+std::list<bulletWall *> OSGWidget::getWallList()
+{
+    return mplayer2WallList;
+}
+
+void OSGWidget::getCurrentWallDim(double *yCenter, double *xCenter)
+{
+    currentSelectedWall->getWallDim(yCenter,xCenter);
+}
+
+    void OSGWidget::create_outerWalls(double MazeSize)
     {
         ///All naming schemes will go clockwise starting at the origin.
         std::vector<osg::Matrix> scales;
-        scales.push_back(osg::Matrix::scale(10.f,1000.f,10.f));
-        scales.push_back(osg::Matrix::scale(1000.f,10.f,10.f));
-        scales.push_back(osg::Matrix::scale(10.f,1000.f,10.f));
-        scales.push_back(osg::Matrix::scale(1000.f,10.f,10.f));
+        scales.push_back(osg::Matrix::scale(10.f,MazeSize,10.f));
+        scales.push_back(osg::Matrix::scale(MazeSize,10.f,10.f));
+        scales.push_back(osg::Matrix::scale(10.f,MazeSize,10.f));
+        scales.push_back(osg::Matrix::scale(MazeSize,10.f,10.f));
         std::vector<osg::Matrix> translations;
-        translations.push_back(osg::Matrix::translate(0.f,500.f,5.f));
-        translations.push_back(osg::Matrix::translate(500.f,1000.f,5.f));
-        translations.push_back(osg::Matrix::translate(1000.f,500.f,5.f));
-        translations.push_back(osg::Matrix::translate(500.f,0.f,5.f));
+        translations.push_back(osg::Matrix::translate(0.f,MazeSize/2,5.f));
+        translations.push_back(osg::Matrix::translate(MazeSize/2,MazeSize,5.f));
+        translations.push_back(osg::Matrix::translate(MazeSize,MazeSize/2,5.f));
+        translations.push_back(osg::Matrix::translate(MazeSize/2,0.f,5.f));
         std::vector<std::string> names;
         names.push_back("wall1");
         names.push_back("wall2");
@@ -335,6 +345,7 @@ bool OSGWidget::checkPlayerWin()
         names.push_back("wall4");
         for(int i{0};i<4;i++)
         {
+//            bulletWall *outerWall = new bulletWall;
             //Create the box
             osg::Box* box    = new osg::Box( osg::Vec3( 0.f, 0.f, 0.f ), 1.0f );
             osg::ShapeDrawable* sd = new osg::ShapeDrawable( box );
@@ -372,16 +383,28 @@ bool OSGWidget::checkPlayerWin()
     void OSGWidget::create_wall(double xCenter, double yCenter, double xWidth, double yHeight)
     {
         //Bullet Create ground.
-        QVector4D wall_color(0.5,0,0.9,1);
+//        QVector4D wall_color{0,0,0,1};
+//        if(xCenter ==0 || yCenter ==0 || xCenter ==186 || yCenter ==186)
+//        {
+//            wall_color.setY(1);
+//            message.append(QString::number(xCenter)+"|"+QString::number(yCenter) +"\t");
+//        }
+//        else
+//        {
+            QVector4D wall_color(0.5,0,0.9,1);
+//            wall_color.setX(0.5);
+//            wall_color.setZ(0.9);
+//            message.append(QString::number(xCenter)+"|"+QString::number(yCenter) +"*\t");
+//        }
         osg::Vec3 groundPos = osg::Vec3(500.f,500.f,0.f);
 
-
         // This creates and adds the ground to the world.
-        mWall= new bulletWall(xCenter,yCenter,xWidth/2,yHeight/2,wall_color);//(groundPos,1000,ground_color);
+        mWall= new bulletWall(xCenter,yCenter,xWidth/1,yHeight/1,wall_color);//(groundPos,1000,ground_color);
         //Add bullet node for OSGWidget
         mplayer2WallList.push_back(mWall);
         mRoot->addChild(mWall->getNode());
         mDynamicsWorld->addRigidBody(mWall->getRigidBodyPtr());
+        update();
 
         /*
         //Create the box
@@ -784,13 +807,15 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
 }
 
 
-void OSGWidget::create_cone()//Cone *c)//double h,double radx,double rady)
+void OSGWidget::create_cone(double mazeSize)
 {
     double h{0},radx{0},rady{0};
-    int High{1000},Low{0};
-    int finishLocX{qrand() % ((High + 1) - Low) + Low};
+    int High{static_cast<int>(mazeSize)},Low{0};
+    int  finishLocX{qrand() % ((High + 1) - Low) + Low};
     int finishLocY{qrand() % ((High + 1) - Low) + Low};
-    mfinishPos = std::vector<double>{finishLocX,finishLocY,10};
+    mfinishPos = std::vector<double>{
+            static_cast<double>(finishLocX),
+            static_cast<double>(finishLocY),10.0};
     double tx{static_cast<double>(finishLocX)},ty{static_cast<double>(finishLocY)},tz{-10};
     double r{0.1},g{1},b{0};
     double rx{0},ry{0},rz{0};
@@ -1114,6 +1139,7 @@ void OSGWidget::nextWall(int index)
 
         i++;
     }
+    mIndex = index;
 //    osg::Node *player2WallNode = mRoot->getChild(index);
 //    mplayer2Wall = qobject_cast<bulletWall*>(player2WallNode);
 //    if(mplayer2Wall != nullptr)
@@ -1122,10 +1148,6 @@ void OSGWidget::nextWall(int index)
     //    }
 }
 
-void OSGWidget::previousWall(int index)
-{
-
-}
 
 void OSGWidget::moveWallDown()
 {

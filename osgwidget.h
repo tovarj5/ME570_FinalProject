@@ -44,11 +44,11 @@ public:
   void create_triangle();
 //  void create_ellipsoid(Ellipsoid *e);
   void create_player(double xCenter,double yCenter,double radius);
-  void create_cone();//Cone *c);// double h, double radx,double rady);
+  void create_cone(double mazeSize);//Cone *c);// double h, double radx,double rady);
   void clear();
   void remove_shape(int index);
   void create_wall(double xCenter,double yCenter,double xWidth,double yHeight);
-  void create_outerWalls();
+  void create_outerWalls(double MazeSize);
 
   //Bullet Function Calls
   void start_timer();
@@ -58,27 +58,25 @@ public:
   void moveBall(btVector3 velocity);
   btVector3 getRigidBodyVelocity();
   void nextWall(int index);
-  void previousWall(int index);
   void moveWallDown();
   void moveWallUp();
   void create_ground(osg::Vec3 groundPos,double groundSize);
   void deleteWall();
   bool checkPlayerWin();
+  std::list<bulletWall*> getWallList();
+  void getCurrentWallDim(double *yCenter, double *xCenter);
 
 protected:
 
   virtual void paintEvent( QPaintEvent* paintEvent );
   virtual void paintGL();
   virtual void resizeGL( int width, int height );
-
   virtual void keyPressEvent( QKeyEvent* event );
   virtual void keyReleaseEvent( QKeyEvent* event );
-
   virtual void mouseMoveEvent( QMouseEvent* event );
   virtual void mousePressEvent( QMouseEvent* event );
   virtual void mouseReleaseEvent( QMouseEvent* event );
   virtual void wheelEvent( QWheelEvent* event );
-
   virtual bool event( QEvent* event );
   void timerEvent(QTimerEvent *);
 
@@ -119,9 +117,10 @@ private:
   std::vector<double> mfinishPos{0,0,0};
 
   osg::Timer_t mStartTick;
-
+  int mIndex{0};
   bool mBusy;
   std::list<bulletWall*> mplayer2WallList;
+  std::set<bulletWall*> wallSet;
 };
 
 #endif

@@ -47,9 +47,11 @@ private slots:
 
     void on_actionMaze_Settings_triggered();
 
+    void on_actionPrint_Wall_List_triggered();
+
 private:
     Ui::MainWindow *ui;
-    int mPlayer2Index{20};
+    int mPlayer2Index{0};
     //std::list<Maze*> MazeList;
     double mMazeSize{500*2};
     double mNumCells{100/6};

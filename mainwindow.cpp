@@ -27,7 +27,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             QMessageBox *msgbox = new QMessageBox;
             msgbox->setText(QString("Player Wins!"));
             msgbox->show();
-            ui->osgGraphicWidget->moveBall(btVector3(0,0,1000));
+            //ui->osgGraphicWidget->moveBall(btVector3(0,0,1000));
+            ui->PlayerLineEdit->setText(QString::number((ui->PlayerLineEdit->text().toInt())+1));
+            on_actionStart_New_Game_triggered();
             return QObject::eventFilter(obj, event);
         }
            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -97,6 +99,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                   mPlayer2Index = mPlayer2Index +1;
                   ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   keyEvent->accept();
+/*                  QMessageBox *msgbox = new QMessageBox;
+                  double *xC{nullptr},*yC{nullptr};
+                  ui->osgGraphicWidget->getCurrentWallDim(xC,yC);
+                  msgbox->setText(QString("X: ") + QString::number(*xC) + QString("|Y: ") + *///QString::number(*yC));
               }
               else if(keyEvent->key()==Qt::Key_A)
               {
@@ -131,6 +137,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
               if(keyEvent->key()==Qt::Key_Space)
               {
                   //Save player location
+
+                  ui->MazeLineEdit->setText(QString::number((ui->MazeLineEdit->text().toInt()+1)));
                   on_actionStart_New_Game_triggered();
                   //transform player back to location.
                   keyEvent->accept();
@@ -150,6 +158,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QMessageBox *msgbox = new QMessageBox;
+    msgbox->setText(QString("KeyPressed"));
+    msgbox->show();
 
     if(event->key()==Qt::Key_Up)
     {
@@ -196,7 +206,8 @@ void MainWindow::on_actionStart_New_Game_triggered()
     double player{static_cast<double>(m->getMazeSize()/(m->getNumCells()*2))};
     ui->osgGraphicWidget->create_player(player,player,player/2);
     ui->osgGraphicWidget->create_ground(osg::Vec3(mMazeSize/2,mMazeSize/2,5),mMazeSize);
-    ui->osgGraphicWidget->create_cone();
+    ui->osgGraphicWidget->create_outerWalls(mMazeSize);
+    ui->osgGraphicWidget->create_cone(mMazeSize);
     ui->osgGraphicWidget->update();
 
     m->MakeMaze([this](double a, double b, double c, double d)
@@ -242,3 +253,18 @@ void MainWindow::on_actionMaze_Settings_triggered()
     msgbox->show();
 }
 
+
+void MainWindow::on_actionPrint_Wall_List_triggered()
+{
+    QMessageBox *msgbox = new QMessageBox;
+    std::list<bulletWall*> list{ui->osgGraphicWidget->getWallList()};
+    QString message{""};
+    int i{0};
+    for (bulletWall *wall : list)
+    {
+        i++;
+        message.append(QString::number(i)+"|");
+    }
+    msgbox->setText(message);
+    msgbox->show();
+}

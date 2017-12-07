@@ -113,13 +113,13 @@ void PrintBanner();
 public:
 Maze();
 void MakeMaze();
-void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
+//void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
 void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall, double mazeSize, double cells);
 void GenerateMaze();
 int getMazeSize();
-void setMazeSize(int siz);
+//void setMazeSize(int siz);
 int getNumCells();
-void setNumCells(int num);
+//void setNumCells(int num);
 };
 
 #endif

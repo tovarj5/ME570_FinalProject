@@ -101,20 +101,20 @@ int Maze::getMazeSize()
     return ImageSize;
 }
 
-void Maze::setMazeSize(int siz)
-{
-    ImageSize = siz;
-}
+//void Maze::setMazeSize(int siz)
+//{
+//    ImageSize = siz;
+//}
 
 int Maze::getNumCells()
 {
     return NumCells;
 }
 
-void Maze::setNumCells(int num)
-{
-    NumCells = num;
-}
+//void Maze::setNumCells(int num)
+//{
+//    NumCells = num;
+//}
 
 /*#if defined( __GNUC__ )
 # define GCC_PACK(n) __attribute__((packed,aligned(n)))
@@ -270,10 +270,10 @@ void Maze::RenderMaze( unsigned char* img )
 			int nx = x * CellSize;
 			int ny = y * CellSize;
 
-            if ( !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny                );
-            if ( !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1 );
+            if (y == 0 &&  !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny                );
+            if (x == 0 && !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1 );
             if ( !( v & eDirection_Down  ) ) Line( img, nx,            ny + CellSize, nx + CellSize + 1, ny + CellSize     );
-            if ( !( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1 );
+            if  (!( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1 );
 		}
     }
 }
@@ -289,10 +289,10 @@ void Maze::RenderMaze(unsigned char *img, std::function<void(double, double, dou
             int nx = x * CellSize;
             int ny = y * CellSize;
 
-            if ( !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny               ,OSGcreateWall );
-            if ( !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1,OSGcreateWall );
-            if ( !( v & eDirection_Down  ) ) Line( img, nx,            ny + CellSize, nx + CellSize + 1, ny + CellSize    ,OSGcreateWall );
-            if ( !( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1,OSGcreateWall );
+            //if (y == 0 && !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny               ,OSGcreateWall );
+            if (!(x==NumCells-1) && !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1,OSGcreateWall );
+            if (!(y==NumCells-1) && !( v & eDirection_Down  ) ) Line( img, nx,            ny + CellSize, nx + CellSize + 1, ny + CellSize    ,OSGcreateWall );
+            //if ( x == 0 && !( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1,OSGcreateWall );
         }
     }
 }
@@ -350,7 +350,7 @@ void Maze::MakeMaze()
     delete[]( Img );
 
 }
-
+/*
 void Maze::MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall)
 {
     // prepare PRNG
@@ -382,7 +382,7 @@ void Maze::MakeMaze(std::function<void(double, double, double, double)> OSGcreat
     delete[]( Img );
 
 }
-
+*/
 void Maze::MakeMaze(std::function<void (double, double, double, double)> OSGcreateWall, double mazeSize, double cells)
 {
     //Update Maze Parameters

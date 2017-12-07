@@ -17,13 +17,13 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 
-class BallUpdateCallback: public osg::NodeCallback
+class WallUpdateCallback: public osg::NodeCallback
 {
 private:
     btRigidBody *_body;
 
 public:
-    BallUpdateCallback(btRigidBody *body) :
+    WallUpdateCallback(btRigidBody *body) :
         _body(body)
     {
     }
@@ -32,8 +32,9 @@ public:
     {
         btScalar m[16];
 
-        btDefaultMotionState* myMotionState = (btDefaultMotionState*) _body->getMotionState();
-        myMotionState->m_graphicsWorldTrans.getOpenGLMatrix(m);
+        _body->getCenterOfMassTransform().getOpenGLMatrix(m);
+        //btDefaultMotionState* myMotionState = (btDefaultMotionState*) _body->getMotionState();
+        //myMotionState->m_graphicsWorldTrans.getOpenGLMatrix(m);
 
         osg::Matrixf mat(m);
 
@@ -58,8 +59,8 @@ bulletWall::bulletWall(int size, QVector4D& color)
 
 bulletWall::bulletWall(double xCenter, double yCenter, double xWidth, double yHeight,QVector4D& color)
 {
-    mxCenter = xCenter;
-    myCenter = yCenter;
+    mxCenter = &xCenter;
+    myCenter = &yCenter;
     mxWidth = xWidth;
     myHeight = yHeight;
     mColor = color;
@@ -73,10 +74,16 @@ bulletWall::bulletWall(osg::Vec3 pos, int size, QVector4D& color)
     create();
 }
 
+void bulletWall::getWallDim(double *xCenter, double *yCenter)
+{
+    xCenter = mxCenter;
+    yCenter = myCenter;
+}
+
 void bulletWall::create()
 {
-    mbulletWallShape = new btBoxShape(btVector3(mxWidth,myHeight,20*0.5));
-    mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(mxCenter,myCenter,20*.5)));
+    mbulletWallShape = new btBoxShape(btVector3(mxWidth/1.75,myHeight/1.75,30*0.5));
+    mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(*mxCenter,*myCenter,20*.5)));
 
     mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
     mRigidCI->m_restitution = 0.8; //This can change to make the maze/level more difficult.
@@ -108,8 +115,9 @@ void bulletWall::create_mesh()
         stateSet->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
     }
     mTransform = new osg::MatrixTransform;
+    mTransform->setUpdateCallback(new WallUpdateCallback(mRigidBody));
     mTransform->addChild(geode);
-    mTransform->setUpdateCallback(new BallUpdateCallback(mRigidBody));
+
 
 }
 
@@ -131,60 +139,49 @@ void bulletWall::changeWallColor(osg::Vec4 color)
 //Move OSG and Bullet wall to new location
 void bulletWall::translateWall(bool up)
 {
-    bool valid{false};
-    osg::Matrix trans;
-    btTransform bulletPos;
+    btScalar pre[16];
+    mRigidBody->getCenterOfMassTransform().getOpenGLMatrix(pre);
 
-    mbulletWallMotionState->getWorldTransform(bulletPos);
-    btVector3 pos = bulletPos.getOrigin();//mRigidBody->getCenterOfMassPosition();
+    bool valid{false};
 
     //Check if wall is horizontal or vertical
-    if(mxWidth==5.f)
+    if(mxWidth==10.f)
     {
         //Vertical Wall
         if (up)
         {
-            pos.setY(pos.getY() + btScalar(myHeight));
-//            bulletPos.setOrigin(btVector3(0,myHeight,0));
-//            mRigidBody->translate(btVector3(0,myHeight,0));
+            mRigidBody->translate(btVector3(0,myHeight,0));
             //trans = {osg::Matrix::translate(0,myHeight,0)};
+//            *myCenter = *myCenter + myHeight;
         }
-            //myCenter = myCenter + myHeight;
         else
         {
-            pos.setY(pos.getY() - btScalar(myHeight));
-//            mRigidBody->translate(btVector3(0,-myHeight,0));
+            mRigidBody->translate(btVector3(0,-myHeight,0));
 //            trans = {osg::Matrix::translate(0,-myHeight,0)};
-//            myCenter = myCenter-myHeight;
+//            *myCenter = *myCenter-myHeight;
         }
         valid = true;
     }
-    else if(myHeight==5.f)
+    else if(myHeight==10.f)
     {
         //horizontal wall
         if(up)
         {
-            pos.setX(pos.getX() + btScalar(myHeight));
-
             mRigidBody->translate(btVector3(mxWidth,0,0));
-//            trans={osg::Matrix::translate(mxWidth,0,0)};
-//            mxCenter = mxCenter + mxWidth;
+//            *mxCenter = *mxCenter + mxWidth;
         }
         else
         {
-            pos.setX(pos.getX() - btScalar(myHeight));
             mRigidBody->translate(btVector3(-mxWidth,0,0));
 //            trans={osg::Matrix::translate(mxWidth,0,0)};
-            //mxCenter = mxCenter - mxWidth;
+//            *mxCenter = *mxCenter - mxWidth;
         }
 
-//        mTransform->setMatrix(trans);
         valid = true;
-        mRigidBody->setCenterOfMassTransform(bulletPos);
-
     }
 
-//    if(valid)
-//        create();
+    btScalar post[16];
+    mRigidBody->getCenterOfMassTransform().getOpenGLMatrix(post);
+
 }
 
