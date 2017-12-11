@@ -296,7 +296,7 @@ void OSGWidget::deleteWall()
 bool OSGWidget::checkPlayerWin()
 {
     btVector3 ballPos{mBouncyBall->getBallPosition()};
-    double tolerance{35}; // Add to the settings window.
+    double tolerance{40}; // Add to the settings window.
     double xball{static_cast<double>(ballPos.getX())};
     double yball{static_cast<double>(ballPos.getY())};
     double zball{static_cast<double>(ballPos.getZ())};
@@ -325,8 +325,9 @@ void OSGWidget::getCurrentWallDim(double *yCenter, double *xCenter)
     currentSelectedWall->getWallDim(yCenter,xCenter);
 }
 
-    void OSGWidget::create_outerWalls(double MazeSize)
-    {
+void OSGWidget::create_outerWalls(double MazeSize)
+{
+
         ///All naming schemes will go clockwise starting at the origin.
         std::vector<osg::Matrix> scales;
         scales.push_back(osg::Matrix::scale(10.f,MazeSize,10.f));
@@ -378,6 +379,7 @@ void OSGWidget::getCurrentWallDim(double *yCenter, double *xCenter)
             //Add transform to root
             mRoot->addChild(transform);
         }
+        //bulletWall *outer = new bulletWall(MazeSize);
     }
 
     void OSGWidget::create_wall(double xCenter, double yCenter, double xWidth, double yHeight)
@@ -817,7 +819,7 @@ void OSGWidget::create_cone(double mazeSize)
             static_cast<double>(finishLocX),
             static_cast<double>(finishLocY),10.0};
     double tx{static_cast<double>(finishLocX)},ty{static_cast<double>(finishLocY)},tz{-10};
-    double r{0.1},g{1},b{0};
+    double r{150},g{150},b{0};
     double rx{0},ry{0},rz{0};
     double sx{25},sy{25},sz{50};
 //    c->get_scale(sx,sy,sz);
@@ -1126,16 +1128,18 @@ void OSGWidget::nextWall(int index)
     int i{0};
     for(bulletWall *wal:mplayer2WallList)
     {
-        if(i>0 && i==index-1)
-            wal->changeWallColor(nonSelectedColor);
+//        if(i>0 && i==index-1)
+//            wal->changeWallColor(nonSelectedColor);
 
         if(i==index)
         {
             wal->changeWallColor(selectedColor);
             currentSelectedWall=wal;
         }
-        if(i>0 && i==index+1 &&i<mplayer2WallList.size())
+        else
             wal->changeWallColor(nonSelectedColor);
+//        if(i>0 && i==index+1 &&i<mplayer2WallList.size())
+//            wal->changeWallColor(nonSelectedColor);
 
         i++;
     }

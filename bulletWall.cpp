@@ -80,13 +80,51 @@ void bulletWall::getWallDim(double *xCenter, double *yCenter)
     yCenter = myCenter;
 }
 
+bulletWall::bulletWall(double mazeSize)
+{
+    // there are 4 sides. moving clockwise, starting at left wall.
+    int side{0};
+    for(int i;i<4;i++)
+    {
+        btVector3 info{1,1,10};
+        btVector3 pos{1,1,5};
+        if(side==0 || side ==2)
+        info.setY(mazeSize);
+        else
+        info.setX(mazeSize);
+
+        switch (side)
+    {
+        case 0:
+        pos.setY(mazeSize/2);
+        break;
+        case 1:
+        pos.setX(mazeSize/2);
+        pos.setY(mazeSize);
+        break;
+        case 2:
+        pos.setX(mazeSize);
+        pos.setY(mazeSize/2);
+        break;
+        case 3:
+        pos.setX(mazeSize/2);
+        break;
+}
+        mbulletWallShape = new btBoxShape(info);//btVector3(mazeSize,mazeSize,10));
+        mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), pos));//btVector3(mazeSize/2,mazeSize/2,10)));
+        mRigidCI = new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
+        mRigidCI->m_restitution = 0.3;
+        mRigidBody = new btRigidBody(*mRigidCI);
+    }
+}
+
 void bulletWall::create()
 {
     mbulletWallShape = new btBoxShape(btVector3(mxWidth/1.75,myHeight/1.75,30*0.5));
     mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(*mxCenter,*myCenter,20*.5)));
 
     mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
-    mRigidCI->m_restitution = 0.8; //This can change to make the maze/level more difficult.
+    mRigidCI->m_restitution = 0.5; //This can change to make the maze/level more difficult.
     mRigidBody = new btRigidBody(*mRigidCI);
     create_mesh();
 }

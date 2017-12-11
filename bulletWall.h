@@ -30,6 +30,7 @@ public:
     void translateWall(bool up);
     bulletWall(osg::Vec3 pos, int size, QVector4D &color);
     void getWallDim(double *xCenter, double *yCenter);
+    bulletWall(double mazeSize);
 
 private:
     double mSize;

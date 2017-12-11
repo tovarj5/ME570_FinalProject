@@ -289,10 +289,10 @@ void Maze::RenderMaze(unsigned char *img, std::function<void(double, double, dou
             int nx = x * CellSize;
             int ny = y * CellSize;
 
-            //if (y == 0 && !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny               ,OSGcreateWall );
-            if (!(x==NumCells-1) && !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1,OSGcreateWall );
-            if (!(y==NumCells-1) && !( v & eDirection_Down  ) ) Line( img, nx,            ny + CellSize, nx + CellSize + 1, ny + CellSize    ,OSGcreateWall );
-            //if ( x == 0 && !( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1,OSGcreateWall );
+            if (y == 0 && !( v & eDirection_Up    ) ) Line( img, nx,            ny,            nx + CellSize + 1, ny               ,OSGcreateWall );
+            if (/*!(x==NumCells-1) &&*/ !( v & eDirection_Right ) ) Line( img, nx + CellSize, ny,            nx + CellSize,     ny + CellSize + 1,OSGcreateWall );
+            if (/*!(y==NumCells-1) &&*/ !( v & eDirection_Down  ) ) Line( img, nx,            ny + CellSize, nx + CellSize + 1, ny + CellSize    ,OSGcreateWall );
+            if ( x == 0 && !( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1,OSGcreateWall );
         }
     }
 }

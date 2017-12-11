@@ -90,44 +90,67 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
               else if(keyEvent->key()==Qt::Key_Q)
               {
+                  moves=0;
                   mPlayer2Index = mPlayer2Index-1;
                   ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   keyEvent->accept();
               }
               else if (keyEvent->key()==Qt::Key_E)
               {
+                  moves =0;
                   mPlayer2Index = mPlayer2Index +1;
                   ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   keyEvent->accept();
-/*                  QMessageBox *msgbox = new QMessageBox;
+                  /*QMessageBox *msgbox = new QMessageBox;
                   double *xC{nullptr},*yC{nullptr};
                   ui->osgGraphicWidget->getCurrentWallDim(xC,yC);
                   msgbox->setText(QString("X: ") + QString::number(*xC) + QString("|Y: ") + *///QString::number(*yC));
               }
               else if(keyEvent->key()==Qt::Key_A)
               {
-                  ui->osgGraphicWidget->moveWallDown();
-                  keyEvent->accept();
+                  if(moves <maxMoves)
+                  {
+                      moves++;
+                      ui->osgGraphicWidget->moveWallDown();
+                      keyEvent->accept();
+                  }
               }
-              else if(keyEvent->key()==Qt::Key_S)
+              else if(keyEvent->key()==Qt::Key_X)
               {
-                  ui->osgGraphicWidget->moveWallDown();
-                  keyEvent->accept();
+                  if(moves <maxMoves)
+                  {
+                      moves++;
+                      ui->osgGraphicWidget->moveWallDown();
+                      keyEvent->accept();
+                  }
               }
               else if(keyEvent->key()==Qt::Key_D)
               {
                   //move wall right in the x direction
-                  ui->osgGraphicWidget->moveWallUp();
-                  keyEvent->accept();
+                  if(moves <maxMoves)
+                  {
+                      moves++;
+                      ui->osgGraphicWidget->moveWallUp();
+                      keyEvent->accept();
+                  }
               }
               else if(keyEvent->key()==Qt::Key_W)
               {
                   //Move wall up in the y direction
-                  ui->osgGraphicWidget->moveWallUp();
-                  keyEvent->accept();
+                  if(moves <maxMoves)
+                  {
+                      moves++;
+                      ui->osgGraphicWidget->moveWallUp();
+                      keyEvent->accept();
+                  }
               }
               else if(keyEvent->key()==Qt::Key_Z)
               {
+                  int High{static_cast<int>(ui->osgGraphicWidget->getWallList().size())},Low{0};
+                  int  finishLocX{qrand() % ((High + 1) - Low) + Low};
+//                  int finishLocY{qrand() % ((High + 1) - Low) + Low};
+                  mPlayer2Index = finishLocX;
+                  ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   //Delete selected wall
                   keyEvent->accept();
               }

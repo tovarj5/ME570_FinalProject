@@ -56,6 +56,8 @@ private:
     double mMazeSize{500*2};
     double mNumCells{100/6};
     bool mazeGenerated{false};
+    int moves{0};
+    int maxMoves{3};
     //struct settings
 
         int mDifficulty{1};
