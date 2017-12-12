@@ -54,10 +54,12 @@ private:
     int mPlayer2Index{0};
     //std::list<Maze*> MazeList;
     double mMazeSize{500*2};
-    double mNumCells{100/6};
+    double mNumCells{5};
     bool mazeGenerated{false};
     int moves{0};
     int maxMoves{3};
+    std::vector<double> mpresetMaze{500,1000,1500,2000,2500,3000};
+    std::vector<double> mpresetCells{10,16.7,20,30,40,50};
     //struct settings
 
         int mDifficulty{1};

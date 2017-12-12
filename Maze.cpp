@@ -179,7 +179,7 @@ void Maze::SaveBMP( const char* FileName, const void* RawBGRImage, int Width, in
 }
 */
 
-void Maze::Line( unsigned char* img, int x1, int y1, int x2, int y2 )
+/*void Maze::Line( unsigned char* img, int x1, int y1, int x2, int y2 )
 {
     double yCenter{0};
     double yHeight{0};
@@ -219,7 +219,7 @@ void Maze::Line( unsigned char* img, int x1, int y1, int x2, int y2 )
 //			img[ i + 2 ] = img[ i + 1 ] = img[ i + 0 ] = 255;
 //		}
     }
-}
+}*/
 
 void Maze::Line(unsigned char *img, int x1, int y1, int x2, int y2, std::function<void(double, double, double, double)> OSGcreateWall)
 {
@@ -259,7 +259,7 @@ void Maze::Line(unsigned char *img, int x1, int y1, int x2, int y2, std::functio
 //     }
 }
 
-void Maze::RenderMaze( unsigned char* img )
+/*void Maze::RenderMaze( unsigned char* img )
 {
 	for ( int y = 0; y < NumCells; y++ )
 	{
@@ -276,7 +276,7 @@ void Maze::RenderMaze( unsigned char* img )
             if  (!( v & eDirection_Left  ) ) Line( img, nx,            ny,            nx,                ny + CellSize + 1 );
 		}
     }
-}
+}*/
 
 void Maze::RenderMaze(unsigned char *img, std::function<void(double, double, double, double)> OSGcreateWall)
 {
@@ -314,7 +314,7 @@ Maze::Maze()
 
 }
 
-void Maze::MakeMaze()
+/*void Maze::MakeMaze()
 {
     //graphic = wid;
 //    PrintBanner();

@@ -99,9 +99,9 @@ int Mask[9]      = {
 ////////////////////////////////////////////////////////////////////////////
 
 
-void Line( unsigned char* img, int x1, int y1, int x2, int y2 );
+//void Line( unsigned char* img, int x1, int y1, int x2, int y2 );
 void Line( unsigned char* img, int x1, int y1, int x2, int y2, std::function<void(double, double, double, double)> OSGcreateWall);
-void RenderMaze( unsigned char* img );
+//void RenderMaze( unsigned char* img );
 void RenderMaze(unsigned char* img , std::function<void(double, double, double, double)> OSGcreateWall);
 eDirection GetDirection();
 bool IsDirValid( eDirection Dir );
