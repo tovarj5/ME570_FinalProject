@@ -36,10 +36,12 @@ SET(MYSOURCE
         BouncyBall.cpp
         player.h
         player.cpp
-        enemy.h
-        enemy.cpp
         bulletWall.h
         bulletWall.cpp
+        instructionsdialog.ui
+        instructionsdialog.h
+        instructionsdialog.cpp
+
     )
 add_executable(${PROJECT_NAME}
     ${MYSOURCE}

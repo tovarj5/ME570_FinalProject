@@ -1,13 +1,17 @@
 //-------------------------------------------------------
 // Filename: bulletWall.h
 //
-// Description:  The h file for the qt5 bullet bouncy ball example.
+// Description:  The h file for the qt5 bullet walls generation.
 //
-// Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
-//
+// Algorithm Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
 // Creation Date: 11/7/17
 //
 // Owner: Corey McBride
+///-------------------------------------------
+// Modyfying Author: Jacob Tovar
+// Date: 10/28/17
+// Final Project - Maze Wars
+//--------------------------------------------
 //-------------------------------------------------------
 
 #ifndef BULLETWALL_H
@@ -21,6 +25,7 @@ class bulletWall
 {
 public:
     bulletWall();
+    ~bulletWall();
     bulletWall(int size,QVector4D& color);
     bulletWall(double xCenter, double yCenter, double xWidth, double yHeight, QVector4D &color);
     btRigidBody* getRigidBodyPtr() {return mRigidBody;}

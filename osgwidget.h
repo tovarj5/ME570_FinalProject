@@ -37,12 +37,8 @@ public:
              Qt::WindowFlags f = 0 );
 
   virtual ~OSGWidget();
-//  void create_shape( Shape *s);
-//  void delete_shape(int id);
-//  void create_box(Box *b);
-//  void create_box(double h,double w,double d);
+
   void create_triangle();
-//  void create_ellipsoid(Ellipsoid *e);
   void create_player(double xCenter,double yCenter,double radius);
   void create_cone(double mazeSize);//Cone *c);// double h, double radx,double rady);
   void clear();
@@ -113,7 +109,7 @@ private:
   BouncyBall* mBouncyBall {nullptr};
   void initPhysics();
   void createWorld();
-  bulletWall *currentSelectedWall;
+  bulletWall *currentSelectedWall{nullptr};
   std::vector<double> mfinishPos{0,0,0};
 
   osg::Timer_t mStartTick;

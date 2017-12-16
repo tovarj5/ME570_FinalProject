@@ -2,12 +2,14 @@
 // Filename: Ground.h
 //
 // Description:  The h file for the qt5 bullet bouncy ball example.
+// And has been modified to be dymanic in creating the maze ground.
 //
 // Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
 //
 // Creation Date: 11/7/17
 //
 // Owner: Corey McBride
+// Editor : Jacob Tovar
 //-------------------------------------------------------
 
 #ifndef GROUND_H

@@ -18,6 +18,7 @@
 #include <Bullet3Common/b3AlignedAllocator.h>
 #include <QKeyEvent>
 #include <vector>
+#include "instructionsdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,7 +38,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
-    void keyPressEvent(QKeyEvent* event);
+//    void keyPressEvent(QKeyEvent* event);
 
     void on_actionStart_New_Game_triggered();
 
@@ -49,15 +50,18 @@ private slots:
 
     void on_actionPrint_Wall_List_triggered();
 
+    void on_actionShow_Instructions_triggered();
+
 private:
     Ui::MainWindow *ui;
     int mPlayer2Index{0};
-    //std::list<Maze*> MazeList;
+    instructionsdialog * minstructions{nullptr};
+    Maze *mMazeObj{nullptr};
     double mMazeSize{500*2};
-    double mNumCells{5};
+    double mNumCells{20};
     bool mazeGenerated{false};
     int moves{0};
-    int maxMoves{3};
+    int maxMoves{5};
     std::vector<double> mpresetMaze{500,1000,1500,2000,2500,3000};
     std::vector<double> mpresetCells{10,16.7,20,30,40,50};
     //struct settings

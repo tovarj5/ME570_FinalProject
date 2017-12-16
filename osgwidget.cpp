@@ -34,7 +34,7 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
     mStarted = false;
 
     mRoot = new osg::Group;
-
+    //These function calls are for other configureations.
     //create_box(2.0,2.0,2.0);
     //create_triangle();
     //create_cone();
@@ -66,7 +66,7 @@ OSGWidget::OSGWidget( QWidget* parent, Qt::WindowFlags f ):
 
     view->setCameraManipulator( mManipulator );
     //where camera is located, looking location,  which direction is up
-    mManipulator->setHomePosition(osg::Vec3d(500,-500,2000),osg::Vec3d(500,500,0),osg::Vec3d(0,0,1));
+    mManipulator->setHomePosition(osg::Vec3d(500,-250,2000),osg::Vec3d(500,500,0),osg::Vec3d(0,0,1));
 
     mViewer->addView( view );
     mViewer->setThreadingModel( osgViewer::CompositeViewer::SingleThreaded );
@@ -290,7 +290,10 @@ void OSGWidget::create_ground(osg::Vec3 groundPos, double groundSize)
 
 void OSGWidget::deleteWall()
 {
-
+    for(bulletWall *wall : mplayer2WallList)
+    {
+        delete wall;
+    }
 }
 
 bool OSGWidget::checkPlayerWin()
@@ -442,32 +445,7 @@ void OSGWidget::create_outerWalls(double MazeSize)
         */
     }
 
-/*
-//void OSGWidget::create_shape(Shape *s)
-//{
-////    QMessageBox *msgbox = new QMessageBox;
-//    QString type = s->get_type();
-//    if(type =="Box")
-//    {
-//        Box *b = dynamic_cast<Box*>(s);
-//        create_box(b);
-////        msgbox->setText(QString::number(mRoot->getNumChildren()));
-//    }
-//    else if (type =="Cone")
-//    {
-//        Cone *c = dynamic_cast<Cone*>(s);
-//        create_cone(c);
-////        msgbox->setText(QString::number(mRoot->getNumChildren()));
-//    }
-//    else if(type == "Ellipsoid")
-//    {
-//        Ellipsoid *e = dynamic_cast<Ellipsoid*>(s);
-//        create_ellipsoid(e);
-////        msgbox->setText(QString::number(mRoot->getNumChildren()));
-//    }
-////    msgbox->show();
-//}
-*/
+
 void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
 {
     this->makeCurrent();
@@ -812,7 +790,7 @@ void OSGWidget::create_player(double xCenter,double yCenter,double radius)
 void OSGWidget::create_cone(double mazeSize)
 {
     double h{0},radx{0},rady{0};
-    int High{static_cast<int>(mazeSize)},Low{0};
+    int High{static_cast<int>(mazeSize-0.01*mazeSize)},Low{0};//Decrease High by the length of a wall.
     int  finishLocX{qrand() % ((High + 1) - Low) + Low};
     int finishLocY{qrand() % ((High + 1) - Low) + Low};
     mfinishPos = std::vector<double>{
@@ -822,10 +800,6 @@ void OSGWidget::create_cone(double mazeSize)
     double r{150},g{150},b{0};
     double rx{0},ry{0},rz{0};
     double sx{25},sy{25},sz{50};
-//    c->get_scale(sx,sy,sz);
-//    c->get_rotation(rx,ry,rz);
-//    c->get_color(r,g,b);
-//    c->get_translation(tx,ty,tz);
     osg::Cone *cone = new osg::Cone(osg::Vec3(1.f,1.f,1.f),0.5f,2.0f);
     //osg::Cone *cone = new osg::Cone(osg::Vec3(0,0,0),radx,h);
     osg::ShapeDrawable *sd = new osg::ShapeDrawable(cone);
@@ -1126,6 +1100,7 @@ void OSGWidget::nextWall(int index)
     osg::Vec4 selectedColor{1,0,0,1};
     osg::Vec4 nonSelectedColor{0.5,0,0.9,1};
     int i{0};
+    //Search through the list of wall and color them the appropriate color
     for(bulletWall *wal:mplayer2WallList)
     {
 //        if(i>0 && i==index-1)
@@ -1144,23 +1119,27 @@ void OSGWidget::nextWall(int index)
         i++;
     }
     mIndex = index;
-//    osg::Node *player2WallNode = mRoot->getChild(index);
-//    mplayer2Wall = qobject_cast<bulletWall*>(player2WallNode);
-//    if(mplayer2Wall != nullptr)
-//    {
-
-    //    }
 }
 
 
 void OSGWidget::moveWallDown()
 {
-    currentSelectedWall->translateWall(false);
+    osg::Vec4 selectedColor{0,1,0,1};
+    if(!(currentSelectedWall==nullptr))
+    {
+        currentSelectedWall->translateWall(false);
+        currentSelectedWall->changeWallColor(selectedColor);
+    }
 }
 
 void OSGWidget::moveWallUp()
 {
-    currentSelectedWall->translateWall(true);
+    osg::Vec4 selectedColor{0,1,0,1};
+    if(!(currentSelectedWall==nullptr))
+    {
+        currentSelectedWall->translateWall(true);
+        currentSelectedWall->changeWallColor(selectedColor);
+    }
 }
 
 
@@ -1181,7 +1160,7 @@ void OSGWidget::stop_timer()
     }
 }
 
-
+//This was my first example at trying to incorperate bullet into my project I isn't fully functional but I decided to leave it in.
 void OSGWidget::setup_single_ball(osg::Vec3 groundPos,double groundSize)
 {
     if(mBusy)

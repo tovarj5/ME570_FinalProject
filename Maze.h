@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <fstream>
 #include <random>
-#include "mainwindow.h"
 #include <functional>
 #include <osg/MatrixTransform>
 
@@ -40,34 +39,21 @@ private:
             mYheight = yh;
         }
     };
-//    struct osgWall
-//    {
-//        osg::Geode *mGeode{nullptr};
-//        osg::MatrixTransform *mTransform{nullptr};
-//        osgWall(osg::Geode *geo, osg::MatrixTransform *trsfm)
-//        {
-//            mGeode = geo;
-//            mTransform = trsfm;
-//        }
-//    };
 
     std::list<wall*> MazeWallList;
-    //std::list<osg::MatrixTransform> mazeTransform;
-
-//void SaveBMP( const char* FileName, const void* RawBGRImage, int Width, int Height );
 
 ///////////////// User selectable parameters ///////////////////////////////
 
  int ImageSize = 500*2;
- int NumCells  = 100/(6);
+ int NumCells  = 100/(12);
 
 ////////////////////////////////////////////////////////////////////////////
 
 const char* Version = "1.0.0 (27/05/2014)";
 
-const int CellSize = ImageSize / NumCells;
-//OSGWidget graphic{nullptr};
-unsigned char* g_Maze = new unsigned char[ NumCells* NumCells ];
+int CellSize;// = ImageSize / NumCells;
+
+unsigned char* g_Maze;// = new unsigned char[ NumCells* NumCells ];
 
 // current traversing position
 int g_PtX;
@@ -99,21 +85,21 @@ int Mask[9]      = {
 ////////////////////////////////////////////////////////////////////////////
 
 
-//void Line( unsigned char* img, int x1, int y1, int x2, int y2 );
 void Line( unsigned char* img, int x1, int y1, int x2, int y2, std::function<void(double, double, double, double)> OSGcreateWall);
-//void RenderMaze( unsigned char* img );
 void RenderMaze(unsigned char* img , std::function<void(double, double, double, double)> OSGcreateWall);
 eDirection GetDirection();
 bool IsDirValid( eDirection Dir );
 int RandomInt4();
 int RandomInt();
 int CellIdx();
-void PrintBanner();
+
 
 public:
 Maze();
+Maze(double mazeSize, double cells);
+~Maze();
 void MakeMaze();
-//void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
+void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall);
 void MakeMaze(std::function<void(double, double, double, double)> OSGcreateWall, double mazeSize, double cells);
 void GenerateMaze();
 int getMazeSize();

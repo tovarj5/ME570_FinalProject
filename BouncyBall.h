@@ -1,13 +1,14 @@
 //-------------------------------------------------------
-// Filename: BouncyBall.h
+// Filename: BulletWall.h
 //
 // Description:  The h file for the qt5 opengl bullet bouncy ball example.
+// And has been enhanced to generate and control the player ball for the game
 //
-// Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
-//
+// Original Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
 // Creation Date: 11/7/17
 //
 // Owner: Corey McBride
+// Modified By: Jacob Tovar
 //-------------------------------------------------------
 #ifndef BOUNCYBALL_H
 #define BOUNCYBALL_H

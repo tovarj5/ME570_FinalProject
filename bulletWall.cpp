@@ -1,14 +1,17 @@
 //-------------------------------------------------------
 // Filename: bulletWall.cpp
 //
-// Description:  The cpp file for the qt5 bullet bouncy ball example.
+// Description:  The h file for the qt5 bullet walls generation.
 //
-// Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
-//
+// Algorithm Creator:  Professor Corey McBride for MEEN 570 - Brigham Young University
 // Creation Date: 11/7/17
 //
 // Owner: Corey McBride
-// Editor: Jacob Tovar
+///-------------------------------------------
+// Modyfying Author: Jacob Tovar
+// Date: 10/28/17
+// Final Project - Maze Wars
+//--------------------------------------------
 //-------------------------------------------------------
 #include "bulletWall.h"
 #include <osg/Geometry>
@@ -47,7 +50,12 @@ public:
 
 bulletWall::bulletWall()
 {
-  create();
+    create();
+}
+
+bulletWall::~bulletWall()
+{
+    destroy();
 }
 bulletWall::bulletWall(int size, QVector4D& color)
 {
@@ -113,7 +121,7 @@ bulletWall::bulletWall(double mazeSize)
         mbulletWallShape = new btBoxShape(info);//btVector3(mazeSize,mazeSize,10));
         mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1), pos));//btVector3(mazeSize/2,mazeSize/2,10)));
         mRigidCI = new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
-        mRigidCI->m_restitution = 0.3;
+        mRigidCI->m_restitution = 0.2;
         mRigidBody = new btRigidBody(*mRigidCI);
     }
 }
@@ -124,7 +132,7 @@ void bulletWall::create()
     mbulletWallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(*mxCenter,*myCenter,20*.5)));
 
     mRigidCI= new btRigidBody::btRigidBodyConstructionInfo(0,mbulletWallMotionState,mbulletWallShape,btVector3(0,0,0));
-    mRigidCI->m_restitution = 0.5; //This can change to make the maze/level more difficult.
+    mRigidCI->m_restitution = 0.2; //This can change to make the maze/level more difficult.
     mRigidBody = new btRigidBody(*mRigidCI);
     create_mesh();
 }

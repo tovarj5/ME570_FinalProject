@@ -4,6 +4,8 @@
 #include "settingswindow.h"
 #include "getkeycode.h"
 #include "btBulletDynamicsCommon.h"
+#include "QDialog"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,27 +13,39 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     qApp->installEventFilter(this);
+    instructionsdialog *instruct = new instructionsdialog;
+    minstructions = instruct;
 }
 
 MainWindow::~MainWindow()
 {
+    delete minstructions;
     delete ui;
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+//void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+    //Check that the key event applies to these functions
     if (event->type() == QEvent::KeyPress && mazeGenerated && obj->objectName()=="osgGraphicWidget")
        {
+        //Check is the player has won or not.
         if(ui->osgGraphicWidget->checkPlayerWin())
         {
             QMessageBox *msgbox = new QMessageBox;
             msgbox->setText(QString("Player Wins!"));
             msgbox->show();
+            mNumCells = static_cast<int>(mNumCells*1.10);
+//            if(mNumCells == 13 ||mNumCells ==11||mNumCells ==9 ||mNumCells ==7 || mNumCells ==4)
+//            {
+//                mNumCells  = mNumCells +1;
+//            }
             //ui->osgGraphicWidget->moveBall(btVector3(0,0,1000));
             ui->PlayerLineEdit->setText(QString::number((ui->PlayerLineEdit->text().toInt())+1));
             on_actionStart_New_Game_triggered();
             return QObject::eventFilter(obj, event);
         }
+
            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
               qDebug() << "key " << keyEvent->key() << "from" << obj;
 
@@ -41,72 +55,68 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
               float addSpeed{500.0};
               if(keyEvent->key()==Qt::Key_Up)
               {
-//                  msgbox->setText(QString("UP"));
                   velocity = {0,addSpeed,0};
-//                  velocity = currentVelocity+velocity;
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
               }
               else if(keyEvent->key()==Qt::Key_Down)
               {
-//                  msgbox->setText(QString("Down"));
                   velocity={0,-addSpeed,0};
-//                  velocity = currentVelocity+velocity;
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
               }
               else if(keyEvent->key()==Qt::Key_Left)
               {
-//                  msgbox->setText(QString("Left"));
                   velocity={-addSpeed,0,0};
-//                  velocity = currentVelocity+velocity;
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
               }
               else if(keyEvent->key()==Qt::Key_Right)
               {
-//                  msgbox->setText(QString("Right"));
                   velocity= {addSpeed,0,0};
-//                  velocity = currentVelocity+velocity;
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
               }
-              else if(keyEvent->key()==Qt::Key_0)
+   /*           else if(keyEvent->key()==Qt::Key_0)
               {
 //                  msgbox->setText(QString("Right"));
                   velocity={0,0,-addSpeed};
 //                  velocity = currentVelocity+velocity;
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
-              }
-              else if(keyEvent->key()==Qt::Key_9)
+              }*/
+              else if(keyEvent->key()==Qt::Key_9 && mNumCells ==12)
               {
-//                  msgbox->setText(QString("Right"));
                   velocity={0,0,addSpeed};
                   ui->osgGraphicWidget->moveBall(velocity);
                   keyEvent->accept();
               }
-//              else{}
 
-              else if(keyEvent->key()==Qt::Key_Q)
+              //For Demonstration purposes
+              else if (keyEvent->key() == Qt::Key_Z)
+              {
+                  mNumCells = mNumCells*1.1;
+
+                  on_actionStart_New_Game_triggered();
+                  keyEvent->accept();
+
+              }
+              //Keys to move the walls
+              else if(keyEvent->key()==Qt::Key_1 && mPlayer2Index >1)
               {
                   moves=0;
                   mPlayer2Index = mPlayer2Index-1;
                   ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   keyEvent->accept();
               }
-              else if (keyEvent->key()==Qt::Key_E)
+              else if (keyEvent->key()==Qt::Key_3)
               {
                   moves =0;
                   mPlayer2Index = mPlayer2Index +1;
                   ui->osgGraphicWidget->nextWall(mPlayer2Index);
                   keyEvent->accept();
-                  /*QMessageBox *msgbox = new QMessageBox;
-                  double *xC{nullptr},*yC{nullptr};
-                  ui->osgGraphicWidget->getCurrentWallDim(xC,yC);
-                  msgbox->setText(QString("X: ") + QString::number(*xC) + QString("|Y: ") + *///QString::number(*yC));
               }
-              else if(keyEvent->key()==Qt::Key_A)
+              else if(keyEvent->key()==Qt::Key_Q)
               {
                   if(moves <maxMoves)
                   {
@@ -115,7 +125,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                       keyEvent->accept();
                   }
               }
-              else if(keyEvent->key()==Qt::Key_X)
+              else if(keyEvent->key()==Qt::Key_W)
               {
                   if(moves <maxMoves)
                   {
@@ -124,7 +134,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                       keyEvent->accept();
                   }
               }
-              else if(keyEvent->key()==Qt::Key_D)
+              else if(keyEvent->key()==Qt::Key_E)
               {
                   //move wall right in the x direction
                   if(moves <maxMoves)
@@ -134,7 +144,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                       keyEvent->accept();
                   }
               }
-              else if(keyEvent->key()==Qt::Key_W)
+              else if(keyEvent->key()==Qt::Key_2)
               {
                   //Move wall up in the y direction
                   if(moves <maxMoves)
@@ -144,7 +154,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                       keyEvent->accept();
                   }
               }
-              else if(keyEvent->key()==Qt::Key_Z)
+              else if(keyEvent->key()==Qt::Key_4)
               {
                   int High{static_cast<int>(ui->osgGraphicWidget->getWallList().size())},Low{0};
                   int  finishLocX{qrand() % ((High + 1) - Low) + Low};
@@ -154,78 +164,42 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                   //Delete selected wall
                   keyEvent->accept();
               }
-              else
-              {}
 
+
+              //If the space bar is pressed, generate a new maze and increase the Maze Players points.
               if(keyEvent->key()==Qt::Key_Space)
               {
                   //Save player location
+                  mNumCells = static_cast<int>(mNumCells/1.1);
+                  if(mNumCells <14)
+                      mNumCells =12;
 
                   ui->MazeLineEdit->setText(QString::number((ui->MazeLineEdit->text().toInt()+1)));
                   on_actionStart_New_Game_triggered();
                   //transform player back to location.
                   keyEvent->accept();
+                  if (mNumCells==12)
+                  {
+                      msgbox->setText(QString("Ball Player can use key 9 to jump!"));
+                      msgbox->show();
+                  }
 
               }
               ui->osgGraphicWidget->update();
-//              int maxVel{300};
-//              if(velocity[0]<maxVel || velocity[1]<maxVel ||velocity[2]<maxVel)
-                  //velocity = currentVelocity+velocity;
 
-//              ui->osgGraphicWidget->moveBall(velocity);
-//                  msgbox->show();
        }
        return QObject::eventFilter(obj, event);
 }
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    QMessageBox *msgbox = new QMessageBox;
-    msgbox->setText(QString("KeyPressed"));
-    msgbox->show();
-
-    if(event->key()==Qt::Key_Up)
-    {
-        msgbox->setText(QString("UP"));
-        btVector3 velocity{0,100,0};
-        ui->osgGraphicWidget->moveBall(velocity);
-    }
-    else if(event->key()==Qt::Key_Down)
-    {
-        msgbox->setText(QString("Down"));
-        btVector3 velocity{0,-100,0};
-        ui->osgGraphicWidget->moveBall(velocity);
-    }
-    else if(event->key()==Qt::Key_Left)
-    {
-        msgbox->setText(QString("Left"));
-        btVector3 velocity{-100,0,0};
-        ui->osgGraphicWidget->moveBall(velocity);
-    }
-    else if(event->key()==Qt::Key_Right)
-    {
-        msgbox->setText(QString("Right"));
-        btVector3 velocity{100,0,0};
-        ui->osgGraphicWidget->moveBall(velocity);
-    }
-
-    else if (event->key()==Qt::Key_0)
-    {
-        btVector3 velocity{0,0,300};
-        ui->osgGraphicWidget->moveBall(velocity);
-    }
-    msgbox->show();
-
-}
-
 
 void MainWindow::on_actionStart_New_Game_triggered()
 {
     on_actionClear_Maze_triggered();
 
-//    double x{0},y{0},z{0},w{0};
-  //  ui->osgGraphicWidget->create_wall(x,y,z,w);
-    Maze *m = new Maze;
+//    if(!(static_cast<int>(mMazeSize) % static_cast<int>(mNumCells) ==0))
+//    {
+//        mMazeSize = static_cast<int>(mMazeSize/mNumCells)*mNumCells;
+//    }
+    Maze *m = new Maze(mMazeSize,mNumCells);
     double player{static_cast<double>(m->getMazeSize()/(m->getNumCells()*2))};
     ui->osgGraphicWidget->create_player(player,player,player/2);
     ui->osgGraphicWidget->create_ground(osg::Vec3(mMazeSize/2,mMazeSize/2,5),mMazeSize);
@@ -236,15 +210,26 @@ void MainWindow::on_actionStart_New_Game_triggered()
     m->MakeMaze([this](double a, double b, double c, double d)
     {
         ui->osgGraphicWidget->create_wall(a, b, c, d);
-    },mMazeSize,mNumCells);
-
+    });//,mMazeSize,mNumCells);
+    mMazeObj = m;
     mazeGenerated = true;
-    //mazeObj = m;
     ui->osgGraphicWidget->start_timer();
+
+    //Check that a grid wasn't created
+//    std::list<bulletWall*> list{ui->osgGraphicWidget->getWallList()};
+//    int i{0};
+//    for (bulletWall *wall : list)
+//    {
+//        i++;
+//    }
+//    if(i > 300 && mNumCells == 12)
+//        on_actionStart_New_Game_triggered();
 }
 
 void MainWindow::on_actionClear_Maze_triggered()
 {
+//   delete mMazeObj;
+
    ui->osgGraphicWidget->clear();
    ui->osgGraphicWidget->update();
    mazeGenerated = false;
@@ -290,4 +275,9 @@ void MainWindow::on_actionPrint_Wall_List_triggered()
     }
     msgbox->setText(message);
     msgbox->show();
+}
+
+void MainWindow::on_actionShow_Instructions_triggered()
+{
+    minstructions->show();
 }

@@ -58,6 +58,7 @@
     </property>
     <addaction name="actionBouncy_Ball_Example"/>
     <addaction name="actionPrint_Wall_List"/>
+    <addaction name="actionShow_Instructions"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -81,7 +82,7 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>167</width>
+     <width>202</width>
      <height>80</height>
     </size>
    </property>
@@ -110,6 +111,9 @@
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="1" column="2">
@@ -119,6 +123,9 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -186,6 +193,11 @@
   <action name="actionPrint_Wall_List">
    <property name="text">
     <string>Print Wall List</string>
+   </property>
+  </action>
+  <action name="actionShow_Instructions">
+   <property name="text">
+    <string>Show Instructions</string>
    </property>
   </action>
  </widget>
